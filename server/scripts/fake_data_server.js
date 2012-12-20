@@ -255,7 +255,7 @@ function generate(number) {
 }
 
 var express = require('express');
-var app = express.createServer();
+var app = express();
 
 app.use(express.logger());
 

@@ -4,7 +4,7 @@
 
 var api = require('../lib/api'),
     express = require('express'),
-    app = express.createServer();
+    app = express();
 
 app.use(express.logger());
 app.use(express.static(__dirname + '/../../static'));
@@ -23,5 +23,5 @@ app.get('*', function(req,res) {
     res.send('Resource not found', 404);
 });
 
-app.listen(3434);
+app.listen(process.env['PORT'] || 3434);
 

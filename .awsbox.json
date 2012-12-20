@@ -1,0 +1,9 @@
+{
+  "processes": [ "server/bin/app" ],
+  "hooks": {
+    "postcreate" : "server/scripts/aws_post_create.sh"
+  },
+  "packages": [
+    "--enablerepo=epel couchdb"
+  ]
+}
