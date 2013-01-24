@@ -348,6 +348,7 @@
 
                 <form id="login-form", action="/auth", method="POST">
                     <input id="assertion-field" type="hidden" name="assertion" value="">
+                    <input type="hidden" name="_csrf" value=<%=csrf%> >
                 </form>
 
             </div>
@@ -360,13 +361,9 @@
         <script>
         <% if (persona_user) { %>
             var loggedInUser = "<%=persona_user%>";
-            console.log("persona user");
-            console.log(loggedInUser);
         <% } else { %>
             var loggedInUser = null;
         <% } %>
-        console.log("loggedInUser");
-        console.log(loggedInUser);
         </script>
 
         <link type="text/css" rel="stylesheet" href="css/lib/jquery-ui.css">

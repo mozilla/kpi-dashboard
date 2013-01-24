@@ -16,14 +16,13 @@ app.use(express.static(__dirname + '/../../static'));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
 app.use(express.session({ secret: 'dashkpidashkpidashkpi'}));
+app.use(express.csrf());
 
 app.get('/', function(req, res){
-    console.log("get /");
-    console.log(req.session.mozilla_email);
-    console.log(req.session.persona_email);
     res.render('dashboard', {
         mozilla_user: req.session.mozilla_email,
-        persona_user: req.session.persona_email
+        persona_user: req.session.persona_email,
+        csrf: req.session._csrf
     });
 });
 

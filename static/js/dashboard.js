@@ -8,7 +8,6 @@ $("#signin").click(function(e){
 });
 
 $("#signout").click(function(e){
-  console.log("logout");
   navigator.id.logout();
 });
 
@@ -19,7 +18,6 @@ navigator.id.watch({
       $("#login-form").submit();
   },
   onlogout: function() {
-    console.log("Logging out now!");
     window.location = '/logout';
   }
 });
