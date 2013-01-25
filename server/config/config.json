@@ -1,7 +1,7 @@
 {
     "data_server": {
         "host": "kpiggybank.hacksign.in",
-        "port": 80,
+        "port": 443,
         "path": "/wsapi/interaction_data"
     },
     "database_server": {

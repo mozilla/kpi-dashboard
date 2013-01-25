@@ -3,7 +3,7 @@
 var config = require('./config'),
     util = require('./util'),
     querystring = require('querystring'),
-    http = require('http');
+    https = require('https');
 
 /**
  * Reads data from kpiggybank, using location from config file.
@@ -17,7 +17,7 @@ exports.getData = function(options, callback) {
   
   config.data_server.path += "?" + querystring.stringify(options);
 
-  http.get(config.data_server, function(res) {
+  https.get(config.data_server, function(res) {
       res.setEncoding('utf8');
       var body = '';
       res.on('data', function(chunk) {
