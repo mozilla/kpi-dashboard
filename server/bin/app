@@ -5,6 +5,7 @@
 var api = require('../lib/api'),
     https = require('https'),
     qs = require('qs'),
+    config = require('../lib/config'),
     express = require('express'),
     app = express();
 
@@ -59,20 +60,18 @@ app.post('/auth', function(req, res) {
     
     var body = qs.stringify({
         assertion: assertion,
-        audience: "http://localhost:3434"
+        audience: config.verification_audience
     });
     
     console.info('verifying with browserid');
     
-    var request = https.request({
-        host: 'verifier.login.persona.org',
-        path: '/verify',
-        method: 'POST',
-        headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-            'content-length': body.length
-        }
-    }, onVerify);
+    config.verification_server["method"] = "POST";
+    config.verification_server["headers"] = {
+        'content-type': 'application/x-www-form-urlencoded',
+        'content-length': body.length
+    };
+    
+    var request = https.request(config.verification_server, onVerify);
     
     request.write(body);
     request.end();
