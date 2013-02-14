@@ -411,8 +411,8 @@ function initDatabase(callback) {
 /**
  * Populates the database with data
  */
-exports.populateDatabase = function() {
-    data.getData(null, null, function(rawData) {
+exports.populateDatabase = function(options) {
+    data.getData(options, function(rawData) {
         rawData.forEach(function(datum) {
             // Ignore blobs with empty event streams: they are the result of errors
             if(datum.value.event_stream.length === 0) {

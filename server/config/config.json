@@ -1,7 +1,7 @@
 {
     "data_server": {
-        "host": "kpiggybank.hacksign.in",
-        "port": 80,
+        "host": "kpiggybank-stage.personatest.org",
+        "port": 443,
         "path": "/wsapi/interaction_data"
     },
     "database_server": {
@@ -9,6 +9,11 @@
         "port": 5984,
         "database": "kpi_dashboard"
     },
+    "verification_server": {
+        "host": "verifier.login.persona.org",
+        "path": "/verify"
+    },
+    "verification_audience": "dashboard-stage.personatest.org",
     "segmentations": {
         "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],

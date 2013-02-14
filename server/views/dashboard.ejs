@@ -58,13 +58,23 @@
         <div class="container">
             <div class="navbar">
                 <div class="navbar-inner">
-                        <h1><a class="brand">KPI Dashboard</a></h1>
+                    <h1><a class="brand">KPI Dashboard</a>
+                        <% if (mozilla_user) { %>
+                        <a id="signout">logout</a>
+                        <% } else { %>
+                        <img id="signin" alt="Sign in"
+                        src="https://developer.mozilla.org/files/3971/plain_sign_in_red.png" 
+                        style="width: 95px; height: 25px;">
+                        <% } %>
+                    </h1>
                 </div>
             </div>
 
+            <% if (mozilla_user) { %>
+
             <div class="tabbable tabs-left">
                 <ul class="nav nav-tabs">
-                    <li class="active">
+                    <li>
                         <a href="#new_user_time" data-toggle="tab">New user flow over time</a>
                     </li>
                     <li>
@@ -84,7 +94,7 @@
                     </li>
                 </ul>
 
-                <div class="tab-content">
+                <div class="tab-content">                  
                     <div id="new_user_time" class="step-report tab-pane active form-inline">
                         <h2>Can new users log in?</h2>
                         <p>
@@ -329,8 +339,32 @@
 
                 </div>
             </div>
-        </div>
+            
+            <% } else { %>
 
+            <div>
+
+                Persona KPI data currently restricted to mozilla employees.
+
+                <form id="login-form", action="/auth", method="POST">
+                    <input id="assertion-field" type="hidden" name="assertion" value="">
+                    <input type="hidden" name="_csrf" value=<%=csrf%> >
+                </form>
+
+            </div>
+
+            <% } %>
+            
+        </div> <!-- /container -->
+        
+        
+        <script>
+        <% if (persona_user) { %>
+            var loggedInUser = "<%=persona_user%>";
+        <% } else { %>
+            var loggedInUser = null;
+        <% } %>
+        </script>
 
         <link type="text/css" rel="stylesheet" href="css/lib/jquery-ui.css">
         <link type="text/css" rel="stylesheet" href="css/lib/rickshaw.css">
@@ -340,6 +374,7 @@
         <script type="text/javascript" src="js/lib/d3.js"></script>
         <script type="text/javascript" src="js/lib/rickshaw.js"></script>
         <script type="text/javascript" src="js/lib/dragslider.js"></script>
+        <script type="text/javascript" src="https://login.persona.org/include.js"></script>
         <script type="text/javascript" src="js/dashboard.js"></script>
     </body>
 </html>
