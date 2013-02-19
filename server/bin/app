@@ -41,7 +41,7 @@ app.post('/auth', function(req, res) {
                 console.info('browserid auth successful');
                 req.session.persona_email = verified.email;
                 
-                if (verified.email.slice(-12) == '@mozilla.com') {
+                if (/.+@mozilla\.com$/.test(verified.email)) {
                     console.info('mozilla address, authentication successful');
                     req.session.mozilla_email = verified.email;
                 } else {
