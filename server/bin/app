@@ -65,13 +65,17 @@ app.post('/auth', function(req, res) {
     
     console.info('verifying with browserid');
     
-    config.verification_server["method"] = "POST";
-    config.verification_server["headers"] = {
-        'content-type': 'application/x-www-form-urlencoded',
-        'content-length': body.length
+    var params = {
+        host: config.verification_server.host,
+        path: "/verify",
+        method: "POST",
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            'content-length': body.length
+        }
     };
     
-    var request = https.request(config.verification_server, onVerify);
+    var request = https.request(params, onVerify);
     
     request.write(body);
     request.end();

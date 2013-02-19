@@ -15,9 +15,13 @@ var config = require('./config'),
  */
 exports.getData = function(options, callback) {
   
-  config.data_server.path += "?" + querystring.stringify(options);
+  var params = {
+    host: config.data_server.host,
+    port: config.data_server.port,
+    path: config.data_server.path + "?" + querystring.stringify(options)
+  }
 
-  https.get(config.data_server, function(res) {
+  https.get(params, function(res) {
       res.setEncoding('utf8');
       var body = '';
       res.on('data', function(chunk) {
