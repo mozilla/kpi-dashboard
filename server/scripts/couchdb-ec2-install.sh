@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #
-# This script installs and configures couchdb on a fresh Amazon Linux AMI instance.
-#
-# Must be run with root privileges
-# Tested with Amazon Linux AMI release 2011.02.1.1 (ami-8c1fece5)
+# This script is derived from https://gist.github.com/kparlante/4270908
+# It installs couchdb 1.2.0, which is unavailable via yum on ec2
+# The script then launches couchdb and creates two users, admin/admin and dashboard/dashboard
+# 
 #
 
 export BUILD_DIR="$PWD"
@@ -70,12 +70,23 @@ sudo ln -s /usr/local/etc/rc.d/couchdb /etc/init.d/couchdb
 sudo chkconfig --add couchdb
 sudo chkconfig --level 345 couchdb on
 
+# start up couch db to add users
 sudo service couchdb start
+
+# curl will fail without a delay
+sleep 10
+
+# create an admin user
+HOST="http://localhost:5984"
+curl -X PUT $HOST/_config/admins/admin -d '"admin"'
+
+# create the piggybank user 
+# now that an admin user exists, change the host
+HOST="http://admin:admin@localhost:5984"
+curl -X PUT $HOST/_config/admins/dashboard -d '"dashboard"'
+
 
 # done!
 echo
 echo
 echo "Installation complete!"
-echo
-echo "Couchdb is ready to start. Run:"
-echo "    sudo service couchdb start"
