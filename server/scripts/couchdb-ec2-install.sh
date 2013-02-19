@@ -31,7 +31,7 @@ then
 fi
 
 # install our .ini
-cat << 'EOF' > /usr/local/etc/couchdb/local.ini
+cat << 'EOF' | sudo tee /usr/local/etc/couchdb/local.ini
 [couchdb]
 delayed_commits = false
 
