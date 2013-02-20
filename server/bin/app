@@ -3,11 +3,88 @@
 "use strict";
 
 var api = require('../lib/api'),
+    https = require('https'),
+    qs = require('qs'),
+    config = require('../lib/config'),
     express = require('express'),
-    app = express.createServer();
+    app = express();
 
+app.set('views', __dirname + '/../views');
+app.set('view engine', 'ejs');
 app.use(express.logger());
 app.use(express.static(__dirname + '/../../static'));
+
+app.use(express.bodyParser());
+app.use(express.cookieParser());
+app.use(express.session({ secret: 'dashkpidashkpidashkpi'}));
+app.use(express.csrf());
+
+app.get('/', function(req, res){
+    res.render('dashboard', {
+        mozilla_user: req.session.mozilla_email,
+        persona_user: req.session.persona_email || null, // not undefined
+        csrf: req.session._csrf
+    });
+});
+
+app.post('/auth', function(req, res) {
+    function onVerify(bidRes) {
+        var data = "";
+        bidRes.setEncoding('utf8');
+        bidRes.on('data', function(chunk) {
+            data += chunk;
+        });
+        bidRes.on('end', function() {
+            var verified = JSON.parse(data);
+            if (verified.status == 'okay') {
+            
+                console.info('browserid auth successful');
+                req.session.persona_email = verified.email;
+                
+                if (/.+@mozilla\.com$/.test(verified.email)) {
+                    console.info('mozilla address, authentication successful');
+                    req.session.mozilla_email = verified.email;
+                } else {
+                    req.session.mozilla_email = null;
+                }
+                
+            } else {
+                console.error(verified.reason);
+                req.session.destroy();
+            }
+            res.redirect('/');
+        });
+    };
+    
+    var assertion = req.body.assertion;
+    
+    var body = qs.stringify({
+        assertion: assertion,
+        audience: config.verification_audience
+    });
+    
+    console.info('verifying with browserid');
+    
+    var params = {
+        host: config.verification_server.host,
+        path: "/verify",
+        method: "POST",
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            'content-length': body.length
+        }
+    };
+    
+    var request = https.request(params, onVerify);
+    
+    request.write(body);
+    request.end();
+});
+
+app.get('/logout', function(req, res) {
+    req.session.destroy();
+    res.redirect('/');
+});
 
 // Access the data API
 app.get('/data/:api', function(req, res) {
@@ -23,5 +100,5 @@ app.get('*', function(req,res) {
     res.send('Resource not found', 404);
 });
 
-app.listen(3434);
+app.listen(process.env['PORT'] || 3434);
 

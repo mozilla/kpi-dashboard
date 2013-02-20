@@ -2,53 +2,37 @@
 
 var config = require('./config'),
     util = require('./util'),
-    http = require('http');
+    querystring = require('querystring'),
+    https = require('https');
 
 /**
- * Reads data from a remote file and calls callback with it.
- *     The location of the remote file is defined as a constant at the top of this file.
- * @param {function} callback the callback to call with the data
- */
-function fetchData(callback) {
-    http.get(config.data_server, function(res) {
-        res.setEncoding('utf8');
-        var body = '';
-        res.on('data', function(chunk) {
-            body += chunk;
-        });
-        res.on('end', function() {
-            callback(JSON.parse(body));
-        });
-    }).on('error', function(e) {
-        throw(e);
-    });
-}
-
-/**
- * Retrieves data and returns the portion that falls between start and end.
- * @param {Integer} start timestamp (in seconds) of earliest acceptable data point
+ * Reads data from kpiggybank, using location from config file.
+ * @param {string} start timestamp (in milliseconds) of earliest acceptable data point
  *     or null if any start time is acceptable
- * @param {Integer} end timestamp (in seconds) of latest acceptable data point
+ * @param {string} end timestamp (in milliseconds) of latest acceptable data point
  *     or null if any end time is acceptable
  * @param {function} callback function that will be callled with the data
  */
-exports.getData = function(start, end, callback) {
-    fetchData(function(data) {
-        // If necessary, filter data by start and end times.
-        if(start !== null) {
-            data = data.filter(function(datum) {
-                return exports.getTimestamp(datum) >= start;
-            });
-        }
+exports.getData = function(options, callback) {
+  
+  var params = {
+    host: config.data_server.host,
+    port: config.data_server.port,
+    path: config.data_server.path + "?" + querystring.stringify(options)
+  }
 
-        if(end !== null) {
-            data = data.filter(function(datum) {
-                return exports.getTimestamp(datum) <= end;
-            });
-        }
-
-        callback(data);
-    });
+  https.get(params, function(res) {
+      res.setEncoding('utf8');
+      var body = '';
+      res.on('data', function(chunk) {
+          body += chunk;
+      });
+      res.on('end', function() {
+          callback(JSON.parse(body));
+      });
+  }).on('error', function(e) {
+      throw(e);
+  });
 };
 
 /**

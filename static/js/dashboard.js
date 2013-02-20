@@ -3,6 +3,25 @@
 // Directives for JSHint:
 /*global $:false, Rickshaw:false, d3:false */
 
+$("#signin").click(function(e){
+  navigator.id.request();
+});
+
+$("#signout").click(function(e){
+  navigator.id.logout();
+});
+
+navigator.id.watch({
+  loggedInUser: $('body').data('logged-in-user'),
+  onlogin: function(assertion) {
+      $("#assertion-field").val(assertion);
+      $("#login-form").submit();
+  },
+  onlogout: function() {
+    window.location = '/logout';
+  }
+});
+
 /**
  * Converts the given timestamp to a string date
  * @param {Integer} timestamp seconds since epoch
@@ -192,7 +211,7 @@ window.onpopstate = function(event) {
         // Just show the first report in this case.
         report = $($('[data-toggle="tab"]')[0]).attr('href');
         activateTab(report);
-    }
+    }    
 };
 
 window.onload = window.onpopstate;
