@@ -48,6 +48,18 @@ An implementation of a server serving randomized interaction data (in the
 expected format) is provided in `server/scripts/fake_data_server.js`. You can
 run it using the command `npm run-script data`.
 
+Development
+-----------
+
+If you have your awsbox credentials setup, you can do this to get an
+instance of KPI Dashboard at https://**somekpidashboard**.personatest.org
+
+    ./server/scripts/deploy.js deploy somekpidashboard
+
+Go get a cup of coffee, this will take a while.
+
+If you get an error `Error: Cannot retrieve metalink for repository: epel.` then destory and deploy again.
+
 Prerequisites
 -------------
 The KPI dashboard runs on [NodeJS](http://www.nodejs.org/).
