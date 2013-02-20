@@ -1,3 +1,12 @@
-node_modules
 var
 server/var
+
+# node
+node_modules
+npm-debug.log
+
+# OSX
+.DS_Store
+
+# emacs
+*~

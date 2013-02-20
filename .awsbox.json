@@ -1,0 +1,6 @@
+{
+  "processes": [ "server/bin/app" ],
+  "hooks": {
+    "postcreate" : "server/scripts/couchdb-ec2-install.sh"
+  }
+}

@@ -3,8 +3,15 @@
 var config = require('./config'),
     data = require('./data');
 var cradle = require('cradle');
-var db = new (cradle.Connection)(config.database_server.host, config.database_server.port)
-    .database(config.database_server.database);
+
+var conn = new (cradle.Connection)(config.database_server.host, config.database_server.port, {
+  auth: {
+    username: config.database_server.username,
+    password: config.database_server.password
+  }
+});
+
+var db = conn.database(config.database_server.database);
 
 /*** DATABASE STRUCTURE AND SETUP ***/
 
@@ -411,8 +418,8 @@ function initDatabase(callback) {
 /**
  * Populates the database with data
  */
-exports.populateDatabase = function() {
-    data.getData(null, null, function(rawData) {
+exports.populateDatabase = function(options) {
+    data.getData(options, function(rawData) {
         rawData.forEach(function(datum) {
             // Ignore blobs with empty event streams: they are the result of errors
             if(datum.value.event_stream.length === 0) {
@@ -440,6 +447,7 @@ exports.populateDatabase = function() {
             // Insert it into the database
             // Conveniently, it already has a UUID, from the last time it was in CouchDB.
             db.save(datum.id, datum.value);
+            console.log("ID: " + datum.id);
         });
     });
 };

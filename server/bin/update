@@ -3,4 +3,29 @@
 "use strict";
 
 var db = require('../lib/db');
-db.populateDatabase();
+
+// Defaults to last 30 days 
+var argv = require('optimist')
+.usage('Pull kpi data from kpiggybank')
+.alias('s', 'start')
+.describe('s', 'start timestamp')
+.default('s', Date.now() - 2592000000)
+.alias('e', 'end')
+.describe('e', 'end timestamp')
+.default('e', Date.now())
+.alias('h', 'help')
+.describe('h', 'display this usage message');
+
+var args = argv.argv;
+
+if (args.h) {
+  argv.showHelp();
+  process.exit(1);
+} else {
+  var options = {
+    "start" : args.s,
+    "end" : args.e
+  };
+  
+  db.populateDatabase(options);
+}
