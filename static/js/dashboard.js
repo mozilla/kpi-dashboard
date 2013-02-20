@@ -12,7 +12,7 @@ $("#signout").click(function(e){
 });
 
 navigator.id.watch({
-  loggedInUser: loggedInUser,
+  loggedInUser: $('body').data('logged-in-user'),
   onlogin: function(assertion) {
       $("#assertion-field").val(assertion);
       $("#login-form").submit();

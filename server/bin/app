@@ -22,7 +22,7 @@ app.use(express.csrf());
 app.get('/', function(req, res){
     res.render('dashboard', {
         mozilla_user: req.session.mozilla_email,
-        persona_user: req.session.persona_email,
+        persona_user: req.session.persona_email || null, // not undefined
         csrf: req.session._csrf
     });
 });
