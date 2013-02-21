@@ -4,55 +4,7 @@
         <meta charset="utf-8">
         <title>KPI Dashboard</title>
         <link type="text/css" rel="stylesheet" href="css/lib/bootstrap.css">
-        <style>
-            .chart-controls {
-                margin: 25px 0 0 15px;
-            }
-
-            .segment-options {
-                display: none;
-            }
-
-            .segment-box {
-                display: none;
-            }
-            ul.segment-box {
-                list-style-type: none;
-                margin-left: 15px;
-            }
-
-            .slider {
-                margin-top: 15px;
-            }
-
-            .step-report .chart {
-                width: 800px;
-                margin: 20px auto;
-            }
-
-            .step-report .legend {
-                float: right;
-                width: 300px;
-                padding: 10px;
-                border: 1px solid #000;
-            }
-
-            .step-report path {
-              stroke-width: 3px;
-              fill: none;
-            }
-            .step-report .tick line {
-                stroke-width: 1px;
-                stroke: #999;
-            }
-            .step-report .tick text {
-                fill: #000;
-                font-size: 10px;
-            }
-            .step-report .x-tick text {
-                transform: 'rotate(90, 0, 0)';
-            }
-        </style>
+        <link type="text/css" rel="stylesheet" href="css/dashboard.css">
     </head>
     <body data-logged-in-user="<%= persona_user %>">
         <div class="container">
@@ -63,8 +15,7 @@
                         <a id="signout">logout</a>
                         <% } else { %>
                         <img id="signin" alt="Sign in"
-                        src="https://developer.mozilla.org/files/3971/plain_sign_in_red.png" 
-                        style="width: 95px; height: 25px;">
+                        src="https://developer.mozilla.org/files/3971/plain_sign_in_red.png">
                         <% } %>
                     </h1>
                 </div>
@@ -114,7 +65,7 @@
                                 to
                                 <input type="date" class="end" placeholder="YYYY-MM-DD">
                             </p>
-                            <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            <div class="slider date-slider"></div>
                         </div>
 
                     </div>
@@ -138,7 +89,7 @@
                                 to
                                 <input type="date" class="end" placeholder="YYYY-MM-DD">
                             </p>
-                            <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            <div class="slider date-slider"></div>
                         </div>
 
                     </div>
@@ -159,7 +110,7 @@
                                     to
                                     <input type="date" class="end" placeholder="YYYY-MM-DD">
                                 </p>
-                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                                <div class="slider date-slider"></div>
                             </div>
 
                             <p class="controls">Show
@@ -217,7 +168,7 @@
                                     to
                                     <input type="date" class="end" placeholder="YYYY-MM-DD">
                                 </p>
-                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                                <div class="slider date-slider"></div>
                             </div>
                             <p class="controls">Show
                                 <label class="control-label inline">
@@ -267,7 +218,7 @@
                                     to
                                     <input type="date" class="end" placeholder="YYYY-MM-DD">
                                 </p>
-                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                                <div class="slider date-slider"></div>
                             </div>
                             <p class="controls">Show
                                 <label class="control-label inline">
@@ -314,7 +265,7 @@
                                     to
                                     <input type="date" class="end" placeholder="YYYY-MM-DD">
                                 </p>
-                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                                <div class="slider date-slider"></div>
                             </div>
                             <p class="controls">Show
                                 <label class="control-label inline">
