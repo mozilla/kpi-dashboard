@@ -10,7 +10,9 @@
 export BUILD_DIR="$PWD"
 
 # install gem dependencies
-sudo yum install -y gcc gcc-c++ libtool curl-devel ruby-rdoc zlib-devel openssl-devel make automake rubygems perl git-core
+sudo yum install -y gcc gcc-c++ libtool curl-devel ruby-rdoc zlib-devel \
+                    openssl-devel make automake rubygems perl git-core \
+                    help2man
 sudo gem install rake --no-ri --no-rdoc
 
 if [ ! -e "/usr/local/bin/couchdb" ]
