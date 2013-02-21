@@ -48,17 +48,50 @@ An implementation of a server serving randomized interaction data (in the
 expected format) is provided in `server/scripts/fake_data_server.js`. You can
 run it using the command `npm run-script data`.
 
-Development
------------
+awsbox Development
+------------------
 
-If you have your awsbox credentials setup, you can do this to get an
-instance of KPI Dashboard at https://**somekpidashboard**.personatest.org
+If you have your **awsbox** credentials setup, you can do this to get an
+**instance** of KPI Dashboard at https://**somekpidashboard**.personatest.org
 
     ./server/scripts/deploy.js deploy somekpidashboard -t c1.medium
 
 Go get a cup of coffee, this will take a while.
 
 If you get an error `Error: Cannot retrieve metalink for repository: epel.` then destory and deploy again.
+
+Once this is complete, you may run:
+
+    ssh app@somekpidashboard.personatest.org
+
+Edit `/home/app/code/server/config/config.json`
+
+Make sure your `verification_audience` is correct. Example:
+
+    "verification_audience": "somekpidashboard.personatest.org",
+
+To slurp in stage data, change your `data_server`. Example:
+
+    "data_server": {
+        "host": "kpiggybank.hacksign.in",
+        "port": 443,
+        "path": "/wsapi/interaction_data"
+    }
+
+After a config change, we have to restart the server.
+
+    forever restartall
+
+To import data...
+
+    cd code
+    ./server/bin/update
+
+This will populate the database with some recent data from `data_server`.
+
+See mozilla/browserid and mozilla/awsbox for docs on restarting, pushing code, etc.
+
+To **run locally**, continue reading prerequisites and running, below.
 
 Prerequisites
 -------------
@@ -68,7 +101,6 @@ Once you have Node and [npm](http://npmjs.org/), you can install additional
 dependencies by running the command `npm install`.
 
 We also require a running installation of [CouchDB](http://couchdb.apache.org/).
-
 
 Running
 -------
