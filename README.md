@@ -54,7 +54,7 @@ Development
 If you have your awsbox credentials setup, you can do this to get an
 instance of KPI Dashboard at https://**somekpidashboard**.personatest.org
 
-    ./server/scripts/deploy.js deploy somekpidashboard
+    ./server/scripts/deploy.js deploy somekpidashboard -t c1.medium
 
 Go get a cup of coffee, this will take a while.
 
