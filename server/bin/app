@@ -16,7 +16,7 @@ app.use(express.static(__dirname + '/../../static'));
 
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-app.use(express.session({ secret: 'dashkpidashkpidashkpi'}));
+app.use(express.session({ secret: config.session_secret}));
 app.use(express.csrf());
 
 app.get('/', function(req, res){
