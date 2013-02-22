@@ -1,11 +1,20 @@
 #!/usr/bin/env node
 
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 "use strict";
+
+var path = require('path');
+
+// ./server is our current working directory
+process.chdir(path.dirname(__dirname));
 
 var api = require('../lib/api'),
     https = require('https'),
     qs = require('qs'),
-    config = require('../lib/config'),
+    config = require('../lib/configuration'),
     express = require('express'),
     app = express();
 
@@ -16,7 +25,7 @@ app.use(express.static(__dirname + '/../../static'));
 
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-app.use(express.session({ secret: config.session_secret}));
+app.use(express.session({ secret: config.get('session_secret')}));
 app.use(express.csrf());
 
 app.get('/', function(req, res){
@@ -37,17 +46,17 @@ app.post('/auth', function(req, res) {
         bidRes.on('end', function() {
             var verified = JSON.parse(data);
             if (verified.status == 'okay') {
-            
+
                 console.info('browserid auth successful');
                 req.session.persona_email = verified.email;
-                
+
                 if (/.+@mozilla\.com$/.test(verified.email)) {
                     console.info('mozilla address, authentication successful');
                     req.session.mozilla_email = verified.email;
                 } else {
                     req.session.mozilla_email = null;
                 }
-                
+
             } else {
                 console.error(verified.reason);
                 req.session.destroy();
@@ -55,18 +64,18 @@ app.post('/auth', function(req, res) {
             res.redirect('/');
         });
     };
-    
-    var assertion = req.body.assertion;
-    
+
+   var assertion = req.body.assertion;
+
     var body = qs.stringify({
         assertion: assertion,
-        audience: config.verification_audience
+        audience: config.get('verification_audience')
     });
-    
+
     console.info('verifying with browserid');
-    
+
     var params = {
-        host: config.verification_server.host,
+        host: config.get('verification_server').host,
         path: "/verify",
         method: "POST",
         headers: {
@@ -74,9 +83,9 @@ app.post('/auth', function(req, res) {
             'content-length': body.length
         }
     };
-    
+
     var request = https.request(params, onVerify);
-    
+
     request.write(body);
     request.end();
 });

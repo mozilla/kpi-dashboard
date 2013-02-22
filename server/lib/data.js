@@ -1,25 +1,26 @@
 "use strict";
 
-var config = require('./config'),
+var config = require('./configuration'),
     util = require('./util'),
     querystring = require('querystring'),
     https = require('https');
 
 /**
  * Reads data from kpiggybank, using location from config file.
- * @param {string} start timestamp (in milliseconds) of earliest acceptable data point
- *     or null if any start time is acceptable
- * @param {string} end timestamp (in milliseconds) of latest acceptable data point
- *     or null if any end time is acceptable
+ * @param {string} start timestamp (in milliseconds) of
+ *   earliest acceptable data point or null if any start time
+ *   is acceptable
+ * @param {string} end timestamp (in milliseconds) of latest
+ *   acceptable data point or null if any end time is acceptable
  * @param {function} callback function that will be callled with the data
  */
 exports.getData = function(options, callback) {
-  
+  var dataConfig = config.get('data_server');
   var params = {
-    host: config.data_server.host,
-    port: config.data_server.port,
-    path: config.data_server.path + "?" + querystring.stringify(options)
-  }
+    host: dataConfig.get('host'),
+    port: dataConfig.get('port'),
+    path: dataConfig.get('path') + "?" + querystring.stringify(options)
+  };
 
   https.get(params, function(res) {
       res.setEncoding('utf8');
@@ -41,9 +42,9 @@ exports.getData = function(options, callback) {
  * @return {Integer} seconds since epoch
  */
 exports.getTimestamp = function(datum) {
-    return Math.floor(datum.value.timestamp / 1000);
-        // XXX: kpiggybank has timestamps in milliseconds, so we convert them to seconds.
-        // If we fix that, this will need to change. See https://github.com/mozilla/browserid/issues/1732
+  // XXX: kpiggybank has timestamps in milliseconds, so convert them to seconds.
+  // If we fix that, this will need to change. See mozilla/browserid/issues/1732
+  return Math.floor(datum.value.timestamp / 1000);
 };
 
 /**
@@ -71,10 +72,10 @@ exports.getNumberSitesLoggedIn = function(datum) {
  *     (e.g., find and return the top 5 for each category)
  */
 exports.getSegmentations = function() {
-    if(config.segmentations) {
-        return config.segmentations;
+    if(config.get('segmentations')) {
+      return config.get('segmentations');
     } else {
-        throw new Error('segmentations not yet loaded');
+      throw new Error('segmentations not yet loaded');
     }
 };
 
@@ -86,44 +87,41 @@ exports.getSegmentations = function() {
  * @return the desired value or null if it doesn't exist
  */
 exports.getSegmentation = function(metric, datum) {
-    var value = null;
+  var value = null;
 
-    switch(metric) {
-        case "OS":
-            if('user_agent' in datum.value) value = datum.value.user_agent.os;
-            break;
-        case "Browser":
-            if('user_agent' in datum.value) value = datum.value.user_agent.browser;
-            break;
-        case "Screen":
-            if('screen_size' in datum.value && 'width' in datum.value.screen_size) {
-                value =
-                    datum.value.screen_size.width +
-                    '×' +
-                    datum.value.screen_size.height;
-            } else {
-                value = "Unknown";
-            }
-
-            break;
-        case "Emails":
-            if('number_emails' in datum.value) {
-                if(datum.value.number_emails < 3) {
-                    value = datum.value.number_emails.toString();
-                } else if(datum.value.number_emails >= 3) {
-                    value = "3+";
-                }
-            } else {
-                value = "Unknown";
-            }
-            break;
-        case "Locale":
-            value = datum.value.lang;
-            break;
+  switch(metric) {
+    case "OS":
+      if('user_agent' in datum.value) value = datum.value.user_agent.os;
+      break;
+    case "Browser":
+      if('user_agent' in datum.value) value = datum.value.user_agent.browser;
+      break;
+    case "Screen":
+      if('screen_size' in datum.value && 'width' in datum.value.screen_size) {
+        value = datum.value.screen_size.width + '×' +
+                datum.value.screen_size.height;
+      } else {
+        value = "Unknown";
+      }
+      break;
+    case "Emails":
+      if('number_emails' in datum.value) {
+        if(datum.value.number_emails < 3) {
+          value = datum.value.number_emails.toString();
+        } else if(datum.value.number_emails >= 3) {
+          value = "3+";
+        }
+      } else {
+        value = "Unknown";
+      }
+      break;
+      case "Locale":
+        value = datum.value.lang;
+        break;
     }
 
-    if(value !== null && value in config.aliases) {
-        value = config.aliases[value];
+    if(value !== null && value in config.get('aliases')) {
+      value = config.get('aliases')[value];
     }
 
     return value;
@@ -141,7 +139,8 @@ exports.getKnownSegmentation = function(metric, datum) {
 };
 
 /**
- * Given a data point, returns a list of [only the] names of all events it contains.
+ * Given a data point, returns a list of [only the] names of
+ * all events it contains.
  */
 function eventList(datum) {
     return datum.value.event_stream.map(function(eventPair) {
@@ -161,7 +160,7 @@ exports.newUserSteps = function(datum) {
         return steps;
     }
 
-    config.flows.new_user.forEach(function(step) {
+    config.get('flows').new_user.forEach(function(step) {
         if(events.indexOf(step[1]) !== -1) {
             steps.push(step[0]);
         }
@@ -172,7 +171,7 @@ exports.newUserSteps = function(datum) {
 
 /** Returns the names of all steps in the new user flow */
 exports.newUserStepNames = function() {
-    return config.flows.new_user.map(function(step) {
+    return config.get('flows').new_user.map(function(step) {
         return step[0];
     });
 };
@@ -189,7 +188,7 @@ exports.passwordResetSteps = function(datum) {
         return steps;
     }
 
-    config.flows.password_reset.forEach(function(step) {
+    config.get('flows').password_reset.forEach(function(step) {
         if(events.indexOf(step[1]) !== -1) {
             steps.push(step[0]);
         }
@@ -200,7 +199,7 @@ exports.passwordResetSteps = function(datum) {
 
 /** Returns the names of all steps in the password reset flow */
 exports.passwordResetStepNames = function() {
-    return config.flows.password_reset.map(function(step) {
+    return config.get('flows').password_reset.map(function(step) {
         return step[0];
     });
 };

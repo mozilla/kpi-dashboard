@@ -1,7 +1,7 @@
 "use strict";
 
 var data = require('./data'),
-    config = require('./config'),
+    config = require('./configuration'),
     reports = require('./reports'),
     url = require('url');
 
@@ -29,14 +29,16 @@ exports.segmentations = function(req, res) {
  * Processes request for milestones
  */
 exports.milestones = function(req, res) {
-    resultToResponse(config.milestones, res);
+    resultToResponse(config.get('milestones'), res);
 };
 
 /**
  * Parses URL string to get the string value of the named parameter.
  * @param {String} urlStr the string with the URL
- * @param {String} param the name of the parameter whose value should be extracted
- * @return integer value of given parameter, or null if the parameter doesn't exist
+ * @param {String} param the name of the parameter whose value
+ *   should be extracted
+ * @return integer value of given parameter, or null if the parameter
+ *   doesn't exist
  */
 function getStrParamFromURL(urlStr, param) {
     var params = url.parse(urlStr, true).query;
@@ -44,7 +46,7 @@ function getStrParamFromURL(urlStr, param) {
     var value = null;
 
     if(param in params) {
-        value = params[param];   
+        value = params[param];
     }
 
     return value;
@@ -53,7 +55,8 @@ function getStrParamFromURL(urlStr, param) {
 /**
  * Parses URL string to get the integer value of the named parameter.
  * @param {String} urlStr the string with the URL
- * @param {String} param the name of the parameter whose value should be extracted
+ * @param {String} param the name of the parameter whose value
+ *   should be extracted
  * @return integer value of given parameter,
  *      or null if the parameter doesn't exist or is not an integer
  */
@@ -63,7 +66,7 @@ function getIntParamFromURL(urlStr, param) {
     var value = null;
 
     if(param in params) {
-        value = parseInt(params[param], 10);   
+        value = parseInt(params[param], 10);
 
         if(isNaN(value)) {
             value = null;
@@ -91,7 +94,8 @@ function validateSegmentation(segmentation) {
  * @param {Object} res Express response object
  */
 function getReport(report, req, res) {
-    // Parse parameters to get segmentation preference and start and end times for data
+    // Parse parameters to get segmentation preference and
+    // start and end times for data
     var segmentation = getStrParamFromURL(req.url, 'segmentation'),
         start = getIntParamFromURL(req.url, 'start'),
         end = getIntParamFromURL(req.url, 'end');
