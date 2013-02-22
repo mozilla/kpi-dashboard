@@ -1,0 +1,35 @@
+{
+  "segmentations": {
+        "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
+        "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],
+        "Screen": [ "1024×768", "1680×1050", "1280×1024", "1920×1200", "1280×800" ],
+        "Emails": [ "0", "1", "2", "3+", "Unknown" ],
+        "Locale": [ "en-us", "en-US" ]
+    },
+    "aliases": {
+        "Windows NT 6.1": "Windows 7",
+        "Windows NT 5.1": "Windows XP"
+    },
+    "flows": {
+      "new_user": [
+        [ "1 - Enter email", "screen.set_password" ],
+        [ "2 - Choose password", "user.user_staged" ],
+        [ "3 - Email verified", "user.user_confirmed" ],
+        [ "4 - Logged in (assertion generated)", "assertion_generated" ]
+      ],
+      "password_reset": [
+        [ "1 - Begin password reset", "screen.reset_password" ],
+        [ "2 - Choose new password", "user.reset_password_staged" ],
+        [ "3 - Email verified", "user.reset_password_confirmed" ],
+        [ "4 - Logged in (assertion generated)", "assertion_generated" ]
+      ]
+  },
+  "milestones": [
+    { "milestone": "&alpha; release",
+      "date": "2012-05-01" },
+    { "milestone": "&beta; release",
+      "date": "2012-06-01" },
+    { "milestone": "&gamma; release",
+      "date": "2012-07-01" }
+  ]
+}
