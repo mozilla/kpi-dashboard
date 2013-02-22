@@ -16,6 +16,11 @@
     },
     "session_secret": "dashkpidashkpidashkpi",
     "verification_audience": "localhost:3434",
+    "client_sessions": {
+      "cookie_name": "session_state",
+      "secret": "dashkpidashkpidashkpi",
+      "duration": 1209600000
+    },
     "segmentations": {
         "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],

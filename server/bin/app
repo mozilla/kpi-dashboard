@@ -5,6 +5,7 @@
 var api = require('../lib/api'),
     https = require('https'),
     qs = require('qs'),
+    clientSessions = require('client-sessions'),
     config = require('../lib/config'),
     express = require('express'),
     app = express();
@@ -16,7 +17,12 @@ app.use(express.static(__dirname + '/../../static'));
 
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-app.use(express.session({ secret: config.session_secret}));
+var sess_config = config.client_sessions;
+app.use(clientSessions({
+  cookieName: sess_config.cookie_name,
+  secret:     sess_config.secret,
+  duration:   sess_config.duration
+}));
 app.use(express.csrf());
 
 app.get('/', function(req, res){
@@ -50,7 +56,7 @@ app.post('/auth', function(req, res) {
                 
             } else {
                 console.error(verified.reason);
-                req.session.destroy();
+                req.session.reset();
             }
             res.redirect('/');
         });
@@ -82,7 +88,7 @@ app.post('/auth', function(req, res) {
 });
 
 app.get('/logout', function(req, res) {
-    req.session.destroy();
+    req.session.reset();
     res.redirect('/');
 });
 
