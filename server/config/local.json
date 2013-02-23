@@ -14,7 +14,6 @@
     "verification_server": {
         "host": "verifier.login.persona.org"
     },
-    "session_secret": "dashkpidashkpidashkpi",
     "verification_audience": "localhost:3434",
     "client_sessions": {
       "cookie_name": "session_state",

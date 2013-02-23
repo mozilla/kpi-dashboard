@@ -26,7 +26,7 @@ app.use(express.static(__dirname + '/../../static'));
 
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-var sess_config = config.client_sessions;
+var sess_config = config.get('client_sessions');
 app.use(clientSessions({
   cookieName: sess_config.cookie_name,
   secret:     sess_config.secret,

@@ -24,8 +24,12 @@ var conf = module.exports = convict({
   verification_server: {
     host: 'string = "verifier.login.persona.org"'
   },
-  session_secret: 'string = "dashkpidashkpidashkpi"',
   verification_audience: 'string?',
+  client_sessions: {
+    cookie_name: 'string = "session_state"',
+    secret: 'string = "dashkpidashkpidashkpi"',
+    duration: 'integer = 1209600000'
+  },
   public_url: {
     doc: "The publically visible URL of the deployment",
     format: 'string = "https://login.persona.org"',
