@@ -1,0 +1,23 @@
+{
+  "data_server": {
+    "host": "kpiggybank.hacksign.in",
+    "port": 443,
+    "path": "/wsapi/interaction_data"
+  },
+  "database_server": {
+      "host": "localhost",
+      "port": 5984,
+      "database": "kpi_dashboard",
+      "username": "dashboard",
+      "password": "dashboard"
+  },
+  "verification_server": {
+      "host": "verifier.login.persona.org"
+  },
+  "verification_audience": "dashboard-stage.personatest.org",
+  "client_sessions": {
+    "cookie_name": "session_state",
+    "secret": "dashkpidashkpidashkpi",
+    "duration": 1209600000
+  }
+}

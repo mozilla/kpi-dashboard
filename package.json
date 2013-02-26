@@ -14,10 +14,12 @@
     "dependencies": {
         "optimist": "0.2.8",
         "client-sessions": "0.0.5",
+        "convict": "0.0.6",
         "cradle": "0.6.3",
         "express": "3.0.6",
         "ejs": "0.8.3",
-        "qs": "0.4.2"
+        "qs": "0.4.2",
+        "urlparse": "0.0.1"
     },
     "devDependencies": {
         "awsbox": "0.4.1"
