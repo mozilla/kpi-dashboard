@@ -1,7 +1,7 @@
 {
   "processes": [ "server/bin/app" ],
   "env": {
-    "CONFIG_FILES": "$HOME/code/server/config/production.json,$HOME/code/server/config/aws.json"
+    "CONFIG_FILES": "$HOME/code/server/config/production.json,$HOME/code/server/config/aws.json,$HOME/config.json"
   },
   "hooks": {
     "postcreate" : "server/scripts/couchdb-ec2-install.sh"

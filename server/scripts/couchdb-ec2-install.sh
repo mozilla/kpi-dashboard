@@ -12,7 +12,7 @@ export BUILD_DIR="$PWD"
 # install gem dependencies
 sudo yum install -y gcc gcc-c++ libtool curl-devel ruby-rdoc zlib-devel \
                     openssl-devel make automake rubygems perl git-core \
-                    help2man
+                    help2man texinfo
 sudo gem install rake --no-ri --no-rdoc
 
 if [ ! -e "/usr/local/bin/couchdb" ]
@@ -23,6 +23,7 @@ then
     # get build-couch code
     git clone git://github.com/iriscouch/build-couchdb
     cd $BUILD_DIR/build-couchdb/
+    git checkout 862e8f5
     git submodule init
     git submodule update
   fi

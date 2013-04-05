@@ -22,6 +22,6 @@
         "urlparse": "0.0.1"
     },
     "devDependencies": {
-        "awsbox": "0.4.1"
+        "awsbox": "0.4.2"
     }
 }
