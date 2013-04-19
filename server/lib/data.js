@@ -17,9 +17,9 @@ var config = require('./configuration'),
 exports.getData = function(options, callback) {
   var dataConfig = config.get('data_server');
   var params = {
-    host: dataConfig.get('host'),
-    port: dataConfig.get('port'),
-    path: dataConfig.get('path') + "?" + querystring.stringify(options)
+    host: dataConfig.host,
+    port: dataConfig.port,
+    path: dataConfig.path + "?" + querystring.stringify(options)
   };
 
   https.get(params, function(res) {
