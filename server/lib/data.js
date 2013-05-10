@@ -159,6 +159,10 @@ exports.newUserSteps = function(datum) {
     if(events.indexOf('screen.set_password') === -1) { // not a new user
         return steps;
     }
+    
+    if(events.indexOf('authenticate.enter_password') !== -1) { // not a new user
+        return steps;
+    }
 
     config.get('flows').new_user.forEach(function(step) {
         if(events.indexOf(step[1]) !== -1) {

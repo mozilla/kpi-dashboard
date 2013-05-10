@@ -103,6 +103,8 @@ var VIEWS = {
 
         return values.reduce(function(accumulated, current) {
           var steps = Object.keys(current.steps);
+          var total = accumulated.total + current.total;
+          
           steps.forEach(function(step) {
             if(! (step in accumulated.steps)) {
               accumulated.steps[step] = 0;
@@ -110,13 +112,12 @@ var VIEWS = {
 
             // The fraction of users who completed this step is the
             // weighted average of the results being merged.
-            var total = accumulated.total + current.total;
             accumulated.steps[step] =
               current.steps[step] * current.total / total +
               accumulated.steps[step] * accumulated.total / total;
 
-            accumulated.total = total;
           });
+          accumulated.total = total;
 
           return accumulated;
         }, initial);
