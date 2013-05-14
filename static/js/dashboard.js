@@ -793,27 +793,26 @@ stepReport(_reports.password_reset);
             if(data.hasOwnProperty(segment)) {
                 var segmentData = data[segment];
 
-                if(segmentData.length > 0) {
-                    // 100% of people will be present in the first step,
-                    // so we add the number from the first step to the total.
-                    report.total += segmentData[0].value;
-                }
+                var steps = Object.keys(segmentData);
+                var graph_data = steps.map(function(step) {
+                  var step_number = parseInt(step[0], 10);
+                  report.steps[step_number] = step;
+                  
+                  // 100% of people will be present in the first step,
+                  // so we add the number from the first step to the total.
+                  if (step_number === 1) {
+                    report.total += segmentData[step];
+                  }
+                  return {
+                    x: step_number, 
+                    y: segmentData[step]
+                  };
+                });
 
                 series.push({
                     name: segment,
                     color: palette.color(),
-                    data: segmentData.map(function(d) {
-                        // The first character in the category is the step number:
-                        var step = parseInt(d.category[0], 10);
-
-                        // Save the step name
-                        report.steps[step] = d.category;
-
-                        return {
-                            x: step,
-                            y: d.value
-                        };
-                    })
+                    data: graph_data
                 });
             }
         }
