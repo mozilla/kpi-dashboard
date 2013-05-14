@@ -219,6 +219,7 @@ exports.new_user = function(segmentation, start, end, callback) {
       var segments = Object.keys(rawData.value);
       segments.forEach(function(segment) {
         var steps = Object.keys(rawData.value[segment]);
+        steps.sort();
         result[segment] = steps.map(function(step) {
           return { category: step, value: rawData.value[segment][step] };
         });
