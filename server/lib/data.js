@@ -167,7 +167,10 @@ exports.newUserSteps = function(datum) {
     config.get('flows').new_user.forEach(function(step) {
         if(events.indexOf(step[1]) !== -1) {
             steps.push(step[0]);
-        }
+        } else if (datum.value.orphaned === false && (step[0][0] === '3' || step[0][0] === '4')) {
+          // Push step 3 && step 4 if the dialog is not orphaned
+          steps.push(step[0]);
+        } 
     });
 
     return steps;
