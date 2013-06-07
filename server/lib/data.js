@@ -115,9 +115,16 @@ exports.getSegmentation = function(metric, datum) {
         value = "Unknown";
       }
       break;
-      case "Locale":
-        value = datum.value.lang;
-        break;
+    case "Locale":
+      value = datum.value.lang;
+      break;
+    case "API":
+      if('rp_api' in datum.value) {
+        value = datum.value.rp_api;
+      } else {
+        value = "Unknown";
+      }
+      break;
     }
 
     if(value !== null && value in config.get('aliases')) {

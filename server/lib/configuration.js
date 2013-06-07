@@ -40,7 +40,8 @@ var conf = module.exports = convict({
     Browser: 'array { string }* = [ "Firefox", "Chrome", "MSIE", "etc" ]',
     Screen: 'array { string }* = [ "1024×768", "1680×1050", "etc"]',
     Emails: 'array { string }* = [ "0", "1", "2", "3+", "Unknown" ]',
-    Locale: 'array { string }* = [ "en-us", "en-US" ]'
+    Locale: 'array { string }* = [ "en-us", "en-US" ]',
+    API: 'array { string }* = [ "get", "watch" ]'
   },
   aliases: 'object { } * = {"Windows NT 6.1": "Windows 7"}',
   flows: 'object { } *',
