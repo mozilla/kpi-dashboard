@@ -26,22 +26,22 @@
             <div class="tabbable tabs-left">
                 <ul class="nav nav-tabs">
                     <li>
+                        <a href="#new_user" data-toggle="tab">New user flow</a>
+                    </li>
+                    <li>
                         <a href="#new_user_time" data-toggle="tab">New user flow over time</a>
                     </li>
                     <li>
-                        <a href="#password_reset" data-toggle="tab">Password reset flow</a>
+                        <a href="#new_user_success" data-toggle="tab">New user success</a>
                     </li>
                     <li>
-                        <a href="#new_user" data-toggle="tab">New user flow</a>
+                        <a href="#password_reset" data-toggle="tab">Password reset flow</a>
                     </li>
                     <li>
                         <a href="#sites" data-toggle="tab">Persona adoption</a>
                     </li>
                     <li>
                         <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
-                    </li>
-                    <li>
-                        <a href="#new_user_success" data-toggle="tab">New user success</a>
                     </li>
                 </ul>
 
@@ -101,6 +101,21 @@
                         </p>
 
                         <div class="chart"></div>
+                        
+                        <div class="funnel_table">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th scope="col">Stage</th>
+                                <th scope="col">Count</th>
+                                <th scope="col">Make This Step</th>
+                                <th scope="col">Take Next Step</th>
+                                <th scope="col">Complete All Steps</th>
+                              </tr>
+                            </thead>
+                            <tbody class="funnel_body"></tbody>
+                          </table>
+                        </div>
 
                         <div class="chart-controls">
                             <div class="date-select">

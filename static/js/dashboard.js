@@ -386,6 +386,48 @@ function initStepGraph(report) {
     });
 
     yAxis.render();
+    
+    initStepTable(report);
+}
+
+function initStepTable(report) {
+  var container = report.tab.find('.funnel_body');
+
+  // Clear out old table rows
+  container.html('');
+
+  // Tally up data from all segments, store in table
+  var table = [1,2,3,4].map(function(step) {
+    return {stage: report.steps[step], count:0, move:0, progress:0, completed:0 };
+  });
+  
+  var rawData = report.series;
+  for (var i = 0; i < rawData.length; i++) {
+    for (var j = 0; j < rawData[i].data.length; j++) {
+      var step_number = rawData[i].data[j].x;
+      table[step_number-1].count += rawData[i].data[j].y
+    }
+  }
+  
+  // Calculate other measures, based on counts for each stage
+  for (var i = 0; i < table.length; i++) {
+    if (i < table.length -1) {
+      var move = table[i+1].count / table[i].count;
+      table[i].move = move.toFixed(2) * 100;
+    }
+    
+    var progress = table[i].count / table[0].count;
+    table[i].progress = progress.toFixed(2) * 100;
+    
+    var completed = table[table.length-1].count / table[i].count;
+    table[i].completed = completed.toFixed(2) * 100;
+  }
+  
+  // Spit out rows for the HTML table
+  table.forEach(function(step) {
+    container.append('<tr><td>'+ step.stage +'</td><td>' + step.count + '</td><td>' + step.progress + '%</td><td>' + step.move + '%</td><td>' + step.completed + '%</td></tr>');
+  });
+  
 }
 
 /**
@@ -406,6 +448,9 @@ function updateGraph(report) {
     report.graph.series = newSeries;
     try {
         report.graph.update();
+        if (report.kpi == 'new_user') {
+          initStepTable(report);
+        }
     } catch(e) { // Something bad happened while trying to update the graph.
         // Draw a new graph
         drawGraph(report, newSeries);
@@ -797,16 +842,17 @@ stepReport(_reports.password_reset);
                 var graph_data = steps.map(function(step) {
                   var step_number = parseInt(step[0], 10);
                   report.steps[step_number] = step;
-                  
+                                    
                   // 100% of people will be present in the first step,
                   // so we add the number from the first step to the total.
                   if (step_number === 1) {
                     report.total += segmentData[step];
                   }
+
                   return {
                     x: step_number, 
                     y: segmentData[step]
-                  };
+                  };                  
                 });
 
                 series.push({
@@ -814,7 +860,7 @@ stepReport(_reports.password_reset);
                     color: palette.color(),
                     data: graph_data
                 });
-            }
+            }            
         }
 
         Rickshaw.Series.zeroFill(series);
