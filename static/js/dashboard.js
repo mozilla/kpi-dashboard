@@ -33,7 +33,7 @@ function timestampToDate(timestamp) {
 
 var DATA_URL = '/data/',
     SEGMENTATIONS_URL = '/data/segmentations',
-    EARLIEST_DATE = '2012-05-01', // The earliest date to use as input.
+    EARLIEST_DATE = '2013-04-03', // The earliest date to use as input.
         // TODO: ^ get from server
     LATEST_DATE = timestampToDate(Date.now() / 1000), // today
     DEFAULT_SERIES = [ {
