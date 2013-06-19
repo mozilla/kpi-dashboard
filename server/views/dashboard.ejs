@@ -10,14 +10,13 @@
         <div class="container">
             <div class="navbar">
                 <div class="navbar-inner">
-                    <h1><a class="brand">KPI Dashboard</a>
-                        <% if (mozilla_user) { %>
-                        <a id="signout">logout</a>
-                        <% } else { %>
-                        <img id="signin" alt="Sign in"
-                        src="https://developer.mozilla.org/files/3971/plain_sign_in_red.png">
-                        <% } %>
-                    </h1>
+                    <h1><a class="brand">Persona #signin Analytics</a></h1>
+                    <% if (mozilla_user) { %>
+                    <ul class="nav pull-right"><li><a id="signout">Logout</a></li></ul>
+                    <% } else { %>
+                    <p class="pull-right navbar-text"><img id="signin" alt="Sign in"
+                    src="https://developer.mozilla.org/files/3971/plain_sign_in_red.png"></p>
+                    <% } %>
                 </div>
             </div>
 
@@ -103,7 +102,7 @@
                         <div class="chart"></div>
                         
                         <div class="funnel_table">
-                          <table>
+                          <table class="table table-condensed">
                             <thead>
                               <tr>
                                 <th scope="col">Stage</th>
