@@ -57,7 +57,7 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             dimensions: {
                 width: 700,
-                height: 600,
+                height: 300,
                 padding: { vertical: 100, horizontal: 0 }
             }
         },
@@ -72,7 +72,7 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             dimensions: {
                 width: 700,
-                height: 600,
+                height: 300,
                 padding: { vertical: 100, horizontal: 0 }
             }
         },
@@ -318,9 +318,9 @@ function drawGraph(report, series) {
     // Set up a new Rickshaw graph
     report.graph  = new Rickshaw.Graph( {
         element: container[0],
-        width: 650,
-        height: 500,
-        padding: { top: 0.05, bottom: 0.05, left: 0.05, right: 0.05 },
+        width: 700,
+        height: 300,
+        padding: { top: 0.05, bottom: 0.05, left: 0.00, right: 0.00 },
         renderer: report.renderer,
         series: series
     });
@@ -384,6 +384,12 @@ function initStepGraph(report) {
     });
 
     yAxis.render();
+    
+    var xAxis = new Rickshaw.Graph.Axis.X({
+      graph: report.graph
+    });
+    
+    xAxis.render();
     
     initStepTable(report);
 }
