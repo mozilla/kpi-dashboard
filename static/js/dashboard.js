@@ -370,9 +370,6 @@ function initStepGraph(report) {
     // hover details
     var hoverDetail = new Rickshaw.Graph.HoverDetail( {
         graph: report.graph,
-        xFormatter: function(x) { // Display step name (remove step number)
-            return report.steps[x].substr(4);
-        },
         yFormatter: function(y) { // Display percentage of total users
             return (report.total === 0) ? '0' : Math.round(y / report.total * 100) + '%';
         }
@@ -385,8 +382,21 @@ function initStepGraph(report) {
 
     yAxis.render();
     
+    var labels = function(step) {
+      var map = {
+        1.5: report.steps[1].substr(4),
+        2.5: report.steps[2].substr(4),
+        3.5: report.steps[3].substr(4),
+        4.5: report.steps[4].substr(4)
+      };
+      return map[step];
+    }
+    
+    // Show steps as x axis labels
     var xAxis = new Rickshaw.Graph.Axis.X({
-      graph: report.graph
+      graph: report.graph,
+      orientation: 'bottom',
+      tickFormat: labels
     });
     
     xAxis.render();
