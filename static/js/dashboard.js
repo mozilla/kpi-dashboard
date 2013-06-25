@@ -90,6 +90,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'bar',
             segmentation: null
         },
     // Report: new user success percentage
@@ -98,18 +99,13 @@ var _reports = {
             kpi: 'new_user_success',
             tab: $('#new_user_success'),
             dataToSeries: dataToTimeSeries,
-            graphDecorator: function(report) {
-                initTimeGraph(report);
-
-                // Use line mode by default
-                this.tab.find('input.vis-type:radio[value=line]').prop('checked', 'checked');
-                toggleVisualization(this, 'line');
-            },
+            graphDecorator: initTimeGraph,
             update: updateGraph,
             graph: null,
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'line',
             segmentation: null
         },
     // Report: median of number_sites_logged_in
@@ -124,6 +120,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'area',
             segmentation: null
         }, 
     // Report: total number of data points
@@ -138,6 +135,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'area',
             segmentation: null
         }
 };
@@ -323,7 +321,7 @@ function drawGraph(report, series) {
         width: 650,
         height: 500,
         padding: { top: 0.05, bottom: 0.05, left: 0.05, right: 0.05 },
-        renderer: 'area',
+        renderer: report.renderer,
         series: series
     });
     report.graph.render();
