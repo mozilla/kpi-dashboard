@@ -47,3 +47,6 @@ ul.segment-box {
 }
 #signin { width: 95px; height: 25px; }
 .slider { width: 400px; margin: -5px 0 30px }
+
+#new_user .rickshaw_graph .detail .x_label { display: none }
+#new_user .rickshaw_graph .x_grid_d3 .tick { stroke-width: 0px }

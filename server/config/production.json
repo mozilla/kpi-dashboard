@@ -1,14 +1,32 @@
 {
   "segmentations": {
-        "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
+        "OS": [ "Windows 8", "Windows 7", "Windows Vista", "Windows XP", "Macintosh", "Linux", "Android", "iOS" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],
-        "Screen": [ "1024×768", "1680×1050", "1280×1024", "1920×1200", "1280×800" ],
+        "Screen": [ "1366×768", "1024×768", "1280×800", "1280×1024", "1440×900", "1920×1080"],
         "Emails": [ "0", "1", "2", "3+", "Unknown" ],
-        "Locale": [ "en-us", "en-US" ]
+        "Locale": [ "English", "Spanish", "Portuguese - Brazil", "Polish", "Dutch", "Italian", "French", "German", "Russian", "Turkish" ],
+        "API": [ "get", "getVerifiedEmail", "watch",  "watch with onready", "internal"]
     },
     "aliases": {
+        "Windows NT 6.2": "Windows 8",
         "Windows NT 6.1": "Windows 7",
-        "Windows NT 5.1": "Windows XP"
+        "Windows NT 6.0": "Windows Vista",
+        "Windows NT 5.1": "Windows XP",
+        "iPod" : "iOS",
+        "iPhone" : "iOS",
+        "iPad" : "iOS",
+        "watch_without_onready" : "watch",
+        "watch_with_onready" : "watch with onready",
+        "en" : "English",
+        "es" : "Spanish",
+        "pt-BR" : "Portuguese - Brazil",
+        "de" : "German",
+        "fr" : "French",
+        "it" : "Italian",
+        "pl" : "Polish",
+        "tr" : "Turkish",
+        "ru" : "Russian",
+        "nl" : "Dutch"
     },
     "flows": {
       "new_user": [
@@ -26,10 +44,10 @@
   },
   "milestones": [
     { "milestone": "&alpha; release",
-      "date": "2012-05-01" },
+      "date": "2013-05-01" },
     { "milestone": "&beta; release",
-      "date": "2012-06-01" },
+      "date": "2013-05-07" },
     { "milestone": "&gamma; release",
-      "date": "2012-07-01" }
+      "date": "2013-05-14" }
   ]
 }
