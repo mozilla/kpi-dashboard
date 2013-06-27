@@ -395,6 +395,7 @@ function initStepGraph(report) {
     // Show steps as x axis labels
     var xAxis = new Rickshaw.Graph.Axis.X({
       graph: report.graph,
+      element: report.tab.find('.x_axis')[0],
       orientation: 'bottom',
       tickFormat: labels
     });
