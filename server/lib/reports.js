@@ -194,39 +194,56 @@ exports.new_user_success = function(segmentation, start, end, callback) {
  * @param {Integer} end Unix timestamp of end time or null for none
  */
 exports.new_user = function(segmentation, start, end, callback) {
-  var dbOptions = {
-    group: false
-  };
-
-  // Convert timestamps to dates
-  if(start) {
-    dbOptions.startkey = util.getDateStringFromUnixTime(start);
-  }
-  if(end) {
-    dbOptions.endkey = util.getDateStringFromUnixTime(end);
-  }
 
   if(segmentation) {
-    db.view('new_user_' + segmentation, dbOptions, function(response) {
-      if(response.length !== 1) {
-        console.log('Error: unexpected result from database', response);
-        return;
-      }
-
-      var rawData = response[0];
-
+    var dbOptions = {
+      group : true
+    };
+    
+    // Convert timestamps to dates
+    // We're indexing by both date and segmentation, filtering by just date
+    if(start) {
+      dbOptions.startkey = [util.getDateStringFromUnixTime(start)];
+    }
+    if(end) {
+      dbOptions.endkey = [util.getDateStringFromUnixTime(end)];
+    }
+    
+    db.view('new_user_' + segmentation, dbOptions, function(response) {      
       var result = {};
-      var segments = Object.keys(rawData.value);
-      segments.forEach(function(segment) {
-        var steps = Object.keys(rawData.value[segment]);
-        result[segment] = steps.map(function(step) {
-          return { category: step, value: rawData.value[segment][step] };
+      response.forEach(function(row) {
+        var segment = row.key[1];
+        var steps = Object.keys(row.value);
+        
+        if (!(segment in result)) {
+          result[segment] = {};
+        }
+        
+        steps.forEach(function(step) {
+          if (!(step in result[segment])) {
+            result[segment][step] = row.value[step];
+          } else {
+            result[segment][step] += row.value[step];
+          }
         });
       });
-
       callback(result);
     });
   } else {
+    var dbOptions = {
+      group : false
+    };
+    
+    // Convert timestamps to dates
+    if(start) {
+      dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+      dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+    
+    dbOptions.group = false;
+    
     db.view('new_user', dbOptions, function(response) {
       if(response.length !== 1) {
         console.log('Error: unexpected result from database', response);
@@ -236,11 +253,13 @@ exports.new_user = function(segmentation, start, end, callback) {
       var rawData = response[0];
 
       var steps = Object.keys(rawData.value);
-      var result = { Total:
-                     steps.map(function(step) {
-                       return { category: step, value: rawData.value[step] };
-                     })
-                   };
+      
+      var totals = {};
+      steps.forEach(function(step) {
+        totals[step] = rawData.value[step];
+      });
+      
+      var result = { Total: totals };
 
       callback(result);
     });

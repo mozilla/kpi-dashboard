@@ -154,38 +154,27 @@ var VIEWS = {
   new_user: {
     map: function(doc) {
       if(doc.newUserSteps.length > 0) { // Only count new users
+        var steps = {}
         doc.newUserSteps.forEach(function(step) {
-          emit(doc.date, step);
+          steps[step] = 1;
         });
+        emit(doc.date, steps);
       }
     },
 
     reduce: function(keys, values, rereduce) {
-      if(rereduce) {
-        return values.reduce(function(accumulated, current) {
-          var steps = Object.keys(current);
-          steps.forEach(function(step) {
-            if(! (step in accumulated)) {
-              accumulated[step] = 0;
-            }
-
-            accumulated[step] = accumulated[step] + current[step];
-          });
-
-          return accumulated;
-        }, {});
-      } else {
-        var steps = {};
-        values.forEach(function(step) {
-          if(! (step in steps)) {
-            steps[step] = 0;
+      return values.reduce(function(accumulated, current) {
+        var steps = Object.keys(current);
+        steps.forEach(function(step) {
+          if(! (step in accumulated)) {
+            accumulated[step] = 0;
           }
 
-          steps[step]++;
+          accumulated[step] = accumulated[step] + current[step];
         });
 
-        return steps;
-      }
+        return accumulated;
+      }, {});
     }
   },
 
@@ -231,14 +220,14 @@ var VIEWS = {
    *     segmentation with the one we want.
    */
   var getMapBySegment = function(segmentation) {
-    return function(doc) {
+    return function(doc) {      
       if(doc.newUserSteps.length > 0) {
+        
+        var steps = {}
         doc.newUserSteps.forEach(function(step) {
-          emit(doc.date, {
-            step: step,
-            segment: doc["---SEGMENTATION---"]
-          });
+          steps[step] = 1;
         });
+        emit([doc.date, doc["---SEGMENTATION---"]], steps);        
       }
     }.toString().replace('---SEGMENTATION---', segmentation);
   };
@@ -247,43 +236,18 @@ var VIEWS = {
    * Reduce function to be used in CouchDB to aggregate segmented data
    */
   var reduceBySegment = function(keys, values, rereduce) {
-    if(rereduce) {
-      return values.reduce(function(accumulated, current) {
-        var segments = Object.keys(current);
-        segments.forEach(function(segment) {
-          if(! (segment in accumulated)) {
-            accumulated[segment] = {};
-          }
-
-          var steps = Object.keys(current[segment]);
-          steps.forEach(function(step) {
-            if(! (step in accumulated[segment])) {
-              accumulated[segment][step] = 0;
-            }
-
-            accumulated[segment][step] =
-                accumulated[segment][step] + current[segment][step];
-          });
-        });
-
-        return accumulated;
-      }, {});
-    } else {
-      var segments = {};
-      values.forEach(function(value) {
-        if(! (value.segment in segments)) {
-          segments[value.segment] = {};
+    return values.reduce(function(accumulated, current) {
+      var steps = Object.keys(current);
+      steps.forEach(function(step) {
+        if(! (step in accumulated)) {
+          accumulated[step] = 0;
         }
 
-        if(! (value.step in segments[value.segment])) {
-          segments[value.segment][value.step] = 0;
-        }
-
-        segments[value.segment][value.step]++;
+        accumulated[step] = accumulated[step] + current[step];
       });
 
-      return segments;
-    }
+      return accumulated;
+    }, {});    
   };
 
   var segmentations = Object.keys(data.getSegmentations());

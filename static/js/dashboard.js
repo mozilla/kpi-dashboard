@@ -33,7 +33,7 @@ function timestampToDate(timestamp) {
 
 var DATA_URL = '/data/',
     SEGMENTATIONS_URL = '/data/segmentations',
-    EARLIEST_DATE = '2012-05-01', // The earliest date to use as input.
+    EARLIEST_DATE = '2013-04-03', // The earliest date to use as input.
         // TODO: ^ get from server
     LATEST_DATE = timestampToDate(Date.now() / 1000), // today
     DEFAULT_SERIES = [ {
@@ -57,7 +57,7 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             dimensions: {
                 width: 700,
-                height: 600,
+                height: 300,
                 padding: { vertical: 100, horizontal: 0 }
             }
         },
@@ -72,7 +72,7 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             dimensions: {
                 width: 700,
-                height: 600,
+                height: 300,
                 padding: { vertical: 100, horizontal: 0 }
             }
         },
@@ -90,6 +90,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'bar',
             segmentation: null
         },
     // Report: new user success percentage
@@ -98,18 +99,13 @@ var _reports = {
             kpi: 'new_user_success',
             tab: $('#new_user_success'),
             dataToSeries: dataToTimeSeries,
-            graphDecorator: function(report) {
-                initTimeGraph(report);
-
-                // Use line mode by default
-                this.tab.find('input.vis-type:radio[value=line]').prop('checked', 'checked');
-                toggleVisualization(this, 'line');
-            },
+            graphDecorator: initTimeGraph,
             update: updateGraph,
             graph: null,
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'line',
             segmentation: null
         },
     // Report: median of number_sites_logged_in
@@ -124,6 +120,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'area',
             segmentation: null
         }, 
     // Report: total number of data points
@@ -138,6 +135,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
+            renderer: 'area',
             segmentation: null
         }
 };
@@ -320,10 +318,10 @@ function drawGraph(report, series) {
     // Set up a new Rickshaw graph
     report.graph  = new Rickshaw.Graph( {
         element: container[0],
-        width: 650,
-        height: 500,
-        padding: { top: 0.05, bottom: 0.05, left: 0.05, right: 0.05 },
-        renderer: 'area',
+        width: 700,
+        height: 300,
+        padding: { top: 0.05, bottom: 0.05, left: 0.00, right: 0.00 },
+        renderer: report.renderer,
         series: series
     });
     report.graph.render();
@@ -372,9 +370,6 @@ function initStepGraph(report) {
     // hover details
     var hoverDetail = new Rickshaw.Graph.HoverDetail( {
         graph: report.graph,
-        xFormatter: function(x) { // Display step name (remove step number)
-            return report.steps[x].substr(4);
-        },
         yFormatter: function(y) { // Display percentage of total users
             return (report.total === 0) ? '0' : Math.round(y / report.total * 100) + '%';
         }
@@ -386,6 +381,68 @@ function initStepGraph(report) {
     });
 
     yAxis.render();
+    
+    var labels = function(step) {
+      var map = {
+        1.5: report.steps[1].substr(4),
+        2.5: report.steps[2].substr(4),
+        3.5: report.steps[3].substr(4),
+        4.5: report.steps[4].substr(4)
+      };
+      return map[step];
+    }
+    
+    // Show steps as x axis labels
+    var xAxis = new Rickshaw.Graph.Axis.X({
+      graph: report.graph,
+      element: report.tab.find('.x_axis')[0],
+      orientation: 'bottom',
+      tickFormat: labels
+    });
+    
+    xAxis.render();
+    
+    initStepTable(report);
+}
+
+function initStepTable(report) {
+  var container = report.tab.find('.funnel_body');
+
+  // Clear out old table rows
+  container.html('');
+
+  // Tally up data from all segments, store in table
+  var table = [1,2,3,4].map(function(step) {
+    return {stage: report.steps[step], count:0, move:0, progress:0, completed:0 };
+  });
+  
+  var rawData = report.series;
+  for (var i = 0; i < rawData.length; i++) {
+    for (var j = 0; j < rawData[i].data.length; j++) {
+      var step_number = rawData[i].data[j].x;
+      table[step_number-1].count += rawData[i].data[j].y
+    }
+  }
+  
+  // Calculate other measures, based on counts for each stage
+  for (var i = 0; i < table.length; i++) {
+    if (i < table.length -1) {
+      var move = table[i+1].count / table[i].count;
+      table[i].move = move.toFixed(2) * 100;
+    }
+    
+    var progress = table[i].count / table[0].count;
+    table[i].progress = progress.toFixed(2) * 100;
+    
+    var completed = table[table.length-1].count / table[i].count;
+    table[i].completed = completed.toFixed(2) * 100;
+  }
+  
+  // Spit out rows for the HTML table
+  table.forEach(function(step) {
+    container.append('<tr><td>'+ step.stage +'</td><td>' + step.count + '</td><td>' + step.progress + '%</td><td>' + step.move + '%</td><td>' + step.completed + '%</td></tr>');
+  });
+  
 }
 
 /**
@@ -406,6 +463,9 @@ function updateGraph(report) {
     report.graph.series = newSeries;
     try {
         report.graph.update();
+        if (report.kpi == 'new_user') {
+          initStepTable(report);
+        }
     } catch(e) { // Something bad happened while trying to update the graph.
         // Draw a new graph
         drawGraph(report, newSeries);
@@ -793,29 +853,29 @@ stepReport(_reports.password_reset);
             if(data.hasOwnProperty(segment)) {
                 var segmentData = data[segment];
 
-                if(segmentData.length > 0) {
-                    // 100% of people will be present in the first step,
-                    // so we add the number from the first step to the total.
-                    report.total += segmentData[0].value;
-                }
+                var steps = Object.keys(segmentData);
+                var graph_data = steps.map(function(step) {
+                  var step_number = parseInt(step[0], 10);
+                  report.steps[step_number] = step;
+                                    
+                  // 100% of people will be present in the first step,
+                  // so we add the number from the first step to the total.
+                  if (step_number === 1) {
+                    report.total += segmentData[step];
+                  }
+
+                  return {
+                    x: step_number, 
+                    y: segmentData[step]
+                  };                  
+                });
 
                 series.push({
                     name: segment,
                     color: palette.color(),
-                    data: segmentData.map(function(d) {
-                        // The first character in the category is the step number:
-                        var step = parseInt(d.category[0], 10);
-
-                        // Save the step name
-                        report.steps[step] = d.category;
-
-                        return {
-                            x: step,
-                            y: d.value
-                        };
-                    })
+                    data: graph_data
                 });
-            }
+            }            
         }
 
         Rickshaw.Series.zeroFill(series);
