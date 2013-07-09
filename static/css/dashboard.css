@@ -50,3 +50,7 @@ ul.segment-box {
 
 #new_user .rickshaw_graph .detail .x_label { display: none }
 #new_user .rickshaw_graph .x_grid_d3 .tick { stroke-width: 0px }
+#new_user .x_axis { 
+    position: relative;
+    height: 40px;
+}

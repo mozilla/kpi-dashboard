@@ -322,10 +322,15 @@ var VIEWS = {
   });
 })();
 
+/** Initialize new_user_success report */
 (function() {
   var getMapBySegment = function(segmentation) {
     return function(doc) {
-      emit([doc.date, doc["---SEGMENTATION---"]], doc.number_sites_logged_in);
+      if(doc.newUserSteps.length > 0) { // Only count new users
+        var lastStep = doc.newUserSteps[doc.newUserSteps.length - 1];
+        var success = (lastStep === "4 - Logged in (assertion generated)");
+        emit([doc.date, doc["---SEGMENTATION---"]], success ? 1 : 0);
+      }
     }.toString().replace('---SEGMENTATION---', segmentation);
 
   };
