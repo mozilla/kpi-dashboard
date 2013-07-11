@@ -1,8 +1,8 @@
 {
   "segmentations": {
-        "OS": [ "Windows 8", "Windows 7", "Windows Vista", "Windows XP", "Macintosh", "Linux", "Android", "iOS" ],
+        "OS": [ "Windows 8", "Windows 7", "Windows Vista", "Windows XP", "Macintosh", "Linux", "Android", "iOS", "FirefoxOS" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],
-        "Screen": [ "1366×768", "1024×768", "1280×800", "1280×1024", "1440×900", "1920×1080"],
+        "Screen": [ "Desktop (>= 1024)", "Tablet Profile", "Mobile (<= 640)"],
         "Emails": [ "0", "1", "2", "3+", "Unknown" ],
         "Locale": [ "English", "Spanish", "Portuguese - Brazil", "Polish", "Dutch", "Italian", "French", "German", "Russian", "Turkish" ],
         "API": [ "get", "getVerifiedEmail", "watch",  "watch with onready", "internal"]

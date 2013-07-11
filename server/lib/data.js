@@ -98,8 +98,13 @@ exports.getSegmentation = function(metric, datum) {
       break;
     case "Screen":
       if('screen_size' in datum.value && 'width' in datum.value.screen_size) {
-        value = datum.value.screen_size.width + '×' +
-                datum.value.screen_size.height;
+        if (datum.value.screen_size.width >= 1024) {
+          value = "Desktop (>= 1024)";
+        } else if (datum.value.screen_size.width <= 640 ){
+          value = "Mobile (<= 640)";
+        } else {
+          value = "Tablet Profile";
+        }
       } else {
         value = "Unknown";
       }
