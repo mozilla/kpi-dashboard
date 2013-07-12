@@ -4,12 +4,15 @@
 
 var db = require('../lib/db');
 
+var ONE_MONTH = 2592000000;
+var TWO_WEEKS = 1209600000;
+
 // Defaults to last 30 days 
 var argv = require('optimist')
 .usage('Pull kpi data from kpiggybank')
 .alias('s', 'start')
 .describe('s', 'start timestamp')
-.default('s', Date.now() - 2592000000)
+.default('s', Date.now() - ONE_MONTH)
 .alias('e', 'end')
 .describe('e', 'end timestamp')
 .default('e', Date.now())
@@ -21,11 +24,21 @@ var args = argv.argv;
 if (args.h) {
   argv.showHelp();
   process.exit(1);
-} else {
+} else {  
   var options = {
-    "start" : args.s,
-    "end" : args.e
+    "start" : args.s
   };
-  
-  db.populateDatabase(options);
+
+  while (options["start"] < args.e) {
+    var interval = options["start"] + TWO_WEEKS;
+    if (interval > args.e) {
+      options["end"] = args.e;
+    } else {
+      options["end"] = interval;
+    }
+    console.log("Populating database: " + options["start"] + " - " + options["end"]);
+    db.populateDatabase(options);
+    options["start"] = interval + 1;
+  }
 }
+
