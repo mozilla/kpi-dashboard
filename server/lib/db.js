@@ -427,7 +427,6 @@ exports.populateDatabase = function(options) {
       // Insert it into the database. Conveniently, it already has a UUID,
       // from the last time it was in CouchDB.
       db.save(datum.id, datum.value);
-      console.log("ID: " + datum.id);
     });
   });
 };
