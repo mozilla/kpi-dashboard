@@ -284,9 +284,7 @@ exports.new_user_time = function(start, end, callback) {
     dbOptions.endkey = util.getDateStringFromUnixTime(end);
   }
 
-  db.view('new_user_time', dbOptions, function(dataByDate) {
-    // Pivot data
-    // (so that it's organized by step, then date; rather than date, step
+  db.view('new_user', dbOptions, function(response) {
 
     // Set up container object
     var dataByStep = {};
@@ -295,19 +293,15 @@ exports.new_user_time = function(start, end, callback) {
       dataByStep[step] = {};
     });
 
-    dataByDate.forEach(function(datum) {
-      var date = datum.key;
-
+    response.forEach(function(row) {
+      var date = row.key;
+      var total = row.value[steps[0]];
       steps.forEach(function(step) {
-        var value;
-        if(! (step in datum.value.steps)) { // No data about this step
-          // That means no one completed it.
-          value = 0;
+        if (step in row.value) {
+          dataByStep[step][date] = row.value[step]/total;
         } else {
-          value = datum.value.steps[step];
+          dataByStep[step][date] = 0;
         }
-
-        dataByStep[step][date] = value;
       });
     });
 

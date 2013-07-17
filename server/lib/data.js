@@ -168,6 +168,18 @@ exports.newUserSteps = function(datum) {
     var steps = [];
     var events = eventList(datum);
 
+    if(events.indexOf('staging_continuation') !== -1) {
+      if(events.indexOf('assertion_generated') !== -1) {        
+        config.get('flows').new_user.forEach(function(step) {
+          if (step[0] === '3 - Email verified' || step[0] === '4 - Logged in (assertion generated)') {
+            // Push step 3 && step 4 if this is a staging continuation and an assertion was generated
+            steps.push(step[0]);
+          }
+        });
+      }
+      return steps;
+    }
+
     if(events.indexOf('screen.set_password') === -1) { // not a new user
         return steps;
     }
@@ -179,10 +191,7 @@ exports.newUserSteps = function(datum) {
     config.get('flows').new_user.forEach(function(step) {
         if(events.indexOf(step[1]) !== -1) {
             steps.push(step[0]);
-        } else if (datum.value.orphaned === false && (step[0][0] === '3' || step[0][0] === '4')) {
-          // Push step 3 && step 4 if the dialog is not orphaned
-          steps.push(step[0]);
-        } 
+        }
     });
 
     return steps;
