@@ -138,6 +138,10 @@ exports.new_user = function(req, res) {
     getReport(reports.new_user, req, res);
 };
 
+exports.new_user_per_day = function(req, res) {
+    getReport(reports.new_user_per_day, req, res);
+}
+
 /**
  * Processes request for steps in new user flow
  */
