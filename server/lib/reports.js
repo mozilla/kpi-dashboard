@@ -127,14 +127,6 @@ exports.new_user_success = function(segmentation, start, end, callback) {
     group: true
   };
 
-  // Convert timestamps to dates
-  if(start) {
-    dbOptions.startkey = util.getDateStringFromUnixTime(start);
-  }
-  if(end) {
-    dbOptions.endkey = util.getDateStringFromUnixTime(end);
-  }
-
   if(segmentation) {
     if(start) {
       // Note that the key is in an array, and
@@ -265,6 +257,62 @@ exports.new_user = function(segmentation, start, end, callback) {
     });
   }
 };
+
+exports.new_user_per_day = function(segmentation, start, end, callback) {
+  var dbOptions = {
+    group: true
+  };
+  
+  var step_names = data.newUserStepNames();
+  var last_step_name = step_names[step_names.length-1];
+  
+  if (segmentation) {
+    if(start) {
+      dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
+    }
+    if(end) {
+      dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
+    }
+    
+    db.view('new_user_' + segmentation, dbOptions, function(response) {
+      var graph_data = {};
+      
+      response.forEach(function(row) {
+        var date = row.key[0];
+        var segment = row.key[1];
+        
+        if (!(segment in graph_data)) {
+          graph_data[segment] = [];
+        }
+        
+        graph_data[segment].push({
+          category: date,
+          value: row.value[last_step_name]
+        });
+      });
+      callback(graph_data);
+    });
+    
+  } else {
+    if(start) {
+      dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+      dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+
+    db.view('new_user', dbOptions, function(response) {
+      var graph_data = [];
+      response.forEach(function(row) {
+        graph_data.push({
+          category: row.key,
+          value: row.value[last_step_name]
+        });
+      });
+      callback({ Total: graph_data });
+    });
+  }
+}
 
 /**
  * Reports fraction of users at each step in the new user flow, over time

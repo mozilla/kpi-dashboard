@@ -108,6 +108,20 @@ var _reports = {
             renderer: 'line',
             segmentation: null
         },
+    new_user_per_day:
+        {
+            kpi: 'new_user_per_day',
+            tab: $('#new_user_per_day'),
+            dataToSeries: dataToTimeSeries,
+            graphDecorator: initTimeGraph,
+            update: updateGraph,
+            graph: null,
+            series: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
+            renderer: 'line',
+            segmentation: null
+        },
     // Report: median of number_sites_logged_in
     sites:
         {
@@ -895,7 +909,7 @@ stepReport(_reports.password_reset);
 })(_reports.new_user);
 
 // Setup report for sites and assertions
-[_reports.sites, _reports.assertions, _reports.new_user_success]
+[_reports.sites, _reports.assertions, _reports.new_user_success, _reports.new_user_per_day]
 .forEach(function(report) {
     loadData(report, function() {
         drawGraph(report, report.series);
