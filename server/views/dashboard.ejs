@@ -45,6 +45,12 @@
                     <li>
                         <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
                     </li>
+                    <li>
+                        <a href="#bounce_rate" data-toggle="tab">Bounce rate</a>
+                    </li>
+                    <li>
+                        <a href="#general_progress_time" data-toggle="tab">General progress</a>
+                    </li>
                 </ul>
 
                 <div class="tab-content">                  
@@ -337,8 +343,46 @@
                         </div>
                     </div>
                     
+                    <div id="bounce_rate" class="tab-pane form-inline">
+                      <h2>How many users fail to engage with the dialog?</h2>
+                      
+                      <div class="chart"></div>
+                      <div class="timeline"></div>
+                      
+                      <div class="chart-controls">
+                        <div class="date-select">
+                            <p>
+                                From
+                                <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                to
+                                <input type="date" class="end" placeholder="YYYY-MM-DD">
+                            </p>
+                            <div class="slider date-slider"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
 
+                    <div id="general_progress_time" class="step-report tab-pane form-inline">
+                      <h2>Do users progress through the dialog?</h2>
+                      
+                      <div class="chart"></div>
 
+                      <div class="legend">
+                          <h4>Legend</h4>
+                      </div>
+
+                      <div class="date-select">
+                          <p>
+                              From
+                              <input type="date" class="start" placeholder="YYYY-MM-DD">
+                              to
+                              <input type="date" class="end" placeholder="YYYY-MM-DD">
+                          </p>
+                          <div class="slider date-slider"></div>
+                      </div>                      
+                   </div>
+                   
                 </div>
             </div>
             

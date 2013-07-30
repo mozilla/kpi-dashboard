@@ -151,6 +151,36 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             renderer: 'area',
             segmentation: null
+        },
+    // Report: overall rate of engagement with the dialog
+    bounce_rate:
+        {
+            kpi: 'bounce_rate',
+            tab: $('#bounce_rate'),
+            dataToSeries: dataToTimeSeries,
+            graphDecorator: initTimeGraph,
+            update: updateGraph,
+            graph: null,
+            series: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
+            renderer: 'line',
+            segmentation: null
+        },
+    general_progress_time:
+        {
+          kpi: 'general_progress_time',
+          id: '#general_progress_time',
+          tab: $('#general_progress_time'),
+          dataToSeries: function(d) { return d; },
+          update: null,
+          start: dateToTimestamp(EARLIEST_DATE),
+          end: dateToTimestamp(LATEST_DATE),
+          dimensions: {
+              width: 700,
+              height: 300,
+              padding: { vertical: 100, horizontal: 0 }
+          }
         }
 };
 
@@ -850,6 +880,7 @@ var stepReport = function(report) {
 };
 stepReport(_reports.new_user_time);
 stepReport(_reports.password_reset);
+stepReport(_reports.general_progress_time);
 
 
 // Set up new user flow report
@@ -909,7 +940,7 @@ stepReport(_reports.password_reset);
 })(_reports.new_user);
 
 // Setup report for sites and assertions
-[_reports.sites, _reports.assertions, _reports.new_user_success, _reports.new_user_per_day]
+[_reports.sites, _reports.assertions, _reports.new_user_success, _reports.new_user_per_day, _reports.bounce_rate]
 .forEach(function(report) {
     loadData(report, function() {
         drawGraph(report, report.series);
