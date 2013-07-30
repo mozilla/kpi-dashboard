@@ -119,7 +119,7 @@ var _reports = {
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
             end: dateToTimestamp(LATEST_DATE),
-            renderer: 'line',
+            renderer: 'area',
             segmentation: null
         },
     // Report: median of number_sites_logged_in
