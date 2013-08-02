@@ -802,7 +802,7 @@ var stepReport = function(report) {
             });
 
             // Draw paths
-            var x = d3.scale.linear().domain([0, data[0].length - 1]).range([0, report.dimensions.width]);
+            var x = d3.scale.linear().domain([0, data[0].length]).range([0, report.dimensions.width]);
 
             var lines = chart
                 .select('.paths')
