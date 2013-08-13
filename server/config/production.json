@@ -48,6 +48,10 @@
     { "milestone": "2013-7-03 train",
       "date": "2013-07-18" },
     { "milestone": "Gmail Bridge Live",
-      "date": "2013-07-23" }
+      "date": "2013-07-23" },
+    { "milestone": "2013-7-17 train",
+      "date": "2013-08-06" },
+    { "milestone": "Gmail Bridge Announced",
+      "date": "2013-08-08" }
   ]
 }
