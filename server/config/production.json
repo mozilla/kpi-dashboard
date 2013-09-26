@@ -43,11 +43,15 @@
       ]
   },
   "milestones": [
-    { "milestone": "&alpha; release",
-      "date": "2013-05-01" },
-    { "milestone": "&beta; release",
-      "date": "2013-05-07" },
-    { "milestone": "&gamma; release",
-      "date": "2013-05-14" }
+    { "milestone": "2013-6-19 train",
+      "date": "2013-07-11" },
+    { "milestone": "2013-7-03 train",
+      "date": "2013-07-18" },
+    { "milestone": "Gmail Bridge Live",
+      "date": "2013-07-23" },
+    { "milestone": "2013-7-17 train",
+      "date": "2013-08-06" },
+    { "milestone": "Gmail Bridge Announced",
+      "date": "2013-08-08" }
   ]
 }
