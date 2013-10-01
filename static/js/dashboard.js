@@ -918,7 +918,7 @@ stepReport(_reports.general_progress_time);
                 series.push({
                     name: segment,
                     color: palette.color(),
-                    data: graph_data
+                    data: graph_data.sort(function(a,b) { return a.x - b.x; })  // sort by ascending date
                 });
             }            
         }
