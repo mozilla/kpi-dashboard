@@ -305,7 +305,7 @@ function dataToTimeSeries(data) {
                         // convert date to timestamp to take advantage of
                         // Rickshaw's built-in date handling 
                         x: dateToTimestamp(d.category),
-                        y: d.value
+                        y: d.value || 0
                     };
                 }).sort(function(a,b) { return a.x - b.x; }) // sort by ascending date
             });
