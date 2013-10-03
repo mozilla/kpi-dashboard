@@ -381,7 +381,7 @@ function initTimeGraph(report) {
         graph: report.graph,
         xFormatter: function(x) {
             // Convert timestamp to date for use as the hover detail
-            return (new Date(x * 1000)).toUTCString();
+            return timestampToDate(x);
         }
     } );
 
