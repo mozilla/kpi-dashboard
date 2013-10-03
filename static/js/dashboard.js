@@ -151,6 +151,36 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             renderer: 'area',
             segmentation: null
+        },
+    // Report: overall rate of engagement with the dialog
+    bounce_rate:
+        {
+            kpi: 'bounce_rate',
+            tab: $('#bounce_rate'),
+            dataToSeries: dataToTimeSeries,
+            graphDecorator: initTimeGraph,
+            update: updateGraph,
+            graph: null,
+            series: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
+            renderer: 'line',
+            segmentation: null
+        },
+    general_progress_time:
+        {
+          kpi: 'general_progress_time',
+          id: '#general_progress_time',
+          tab: $('#general_progress_time'),
+          dataToSeries: function(d) { return d; },
+          update: null,
+          start: dateToTimestamp(EARLIEST_DATE),
+          end: dateToTimestamp(LATEST_DATE),
+          dimensions: {
+              width: 700,
+              height: 300,
+              padding: { vertical: 100, horizontal: 0 }
+          }
         }
 };
 
@@ -275,7 +305,7 @@ function dataToTimeSeries(data) {
                         // convert date to timestamp to take advantage of
                         // Rickshaw's built-in date handling 
                         x: dateToTimestamp(d.category),
-                        y: d.value
+                        y: d.value || 0
                     };
                 }).sort(function(a,b) { return a.x - b.x; }) // sort by ascending date
             });
@@ -351,7 +381,7 @@ function initTimeGraph(report) {
         graph: report.graph,
         xFormatter: function(x) {
             // Convert timestamp to date for use as the hover detail
-            return (new Date(x * 1000)).toLocaleDateString();
+            return timestampToDate(x);
         }
     } );
 
@@ -772,7 +802,7 @@ var stepReport = function(report) {
             });
 
             // Draw paths
-            var x = d3.scale.linear().domain([0, data[0].length - 1]).range([0, report.dimensions.width]);
+            var x = d3.scale.linear().domain([0, data[0].length]).range([0, report.dimensions.width]);
 
             var lines = chart
                 .select('.paths')
@@ -850,6 +880,7 @@ var stepReport = function(report) {
 };
 stepReport(_reports.new_user_time);
 stepReport(_reports.password_reset);
+stepReport(_reports.general_progress_time);
 
 
 // Set up new user flow report
@@ -887,7 +918,7 @@ stepReport(_reports.password_reset);
                 series.push({
                     name: segment,
                     color: palette.color(),
-                    data: graph_data
+                    data: graph_data.sort(function(a,b) { return a.x - b.x; })  // sort by ascending date
                 });
             }            
         }
@@ -909,7 +940,7 @@ stepReport(_reports.password_reset);
 })(_reports.new_user);
 
 // Setup report for sites and assertions
-[_reports.sites, _reports.assertions, _reports.new_user_success, _reports.new_user_per_day]
+[_reports.sites, _reports.assertions, _reports.new_user_success, _reports.new_user_per_day, _reports.bounce_rate]
 .forEach(function(report) {
     loadData(report, function() {
         drawGraph(report, report.series);

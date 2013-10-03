@@ -40,6 +40,17 @@
         [ "2 - Choose new password", "user.reset_password_staged" ],
         [ "3 - Email verified", "user.reset_password_confirmed" ],
         [ "4 - Logged in (assertion generated)", "assertion_generated" ]
+      ],
+      "general_progress": [
+        [ "0 - Blob sent", ""],
+        [ "1 - Dialog shown", "screen.rp_info" ],
+        [ "2 - User engaged", ["screen.set_password", 
+                               "screen.pick_email", 
+                               "screen.provision_primary_user", 
+                               "screen.verify_primary_user", 
+                               "authenticate.enter_password"] ],
+        [ "3 - Error screen", "screen.error" ],
+        [ "4 - Logged in (assertion generated)", "assertion_generated" ]
       ]
   },
   "milestones": [

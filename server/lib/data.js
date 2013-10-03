@@ -205,6 +205,51 @@ exports.newUserStepNames = function() {
 };
 
 /**
+ * Returns the names of general steps we're tracking that were completed
+ *     in the given data point.
+ */
+exports.generalProgressSteps = function(datum) {
+    var steps = [];
+    var events = eventList(datum);
+    
+    config.get('flows').general_progress.forEach(function(step) {
+      
+      var step_name = step[0];
+      var event_match = step[1];
+      
+      if (step_name === '0 - Blob sent') {
+        // for now count all blobs
+        steps.push(step_name);
+      } else if (step_name === '2 - User engaged') { 
+        // push step_name if any event in the match list is found in events
+        if (event_match.some(function(event_name) {
+          return events.indexOf(event_name) !== -1;
+        })) {
+          steps.push(step_name);
+        }
+      } else if (step_name === '3 - Error screen') { 
+        // push step_name if any of the events contain the match string 
+        if (events.some(function(event_name) {
+          return event_name.indexOf(event_match) !== -1;
+        })) {
+          steps.push(step_name);
+        }
+      } else if (events.indexOf(step[1]) !== -1) {
+        steps.push(step[0]);
+      }
+    });
+    
+    return steps;
+}
+
+/** Returns the names of general steps through the dialog */
+exports.generalProgressStepNames = function() {
+    return config.get('flows').general_progress.map(function(step) {
+        return step[0];
+    });
+}
+
+/**
  * Returns the names of all steps in the password reset flow that were completed
  *     in the given data point.
  */

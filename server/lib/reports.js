@@ -400,3 +400,69 @@ exports.password_reset = function(start, end, callback) {
     callback(dataByStep);
   });
 };
+
+exports.general_progress_time = function(start, end, callback) {
+  var dbOptions = {
+    group: true
+  };
+  
+  // Convert timestamps to dates
+  if(start) {
+    dbOptions.startkey = util.getDateStringFromUnixTime(start);
+  }
+  if(end) {
+    dbOptions.endkey = util.getDateStringFromUnixTime(end);
+  }
+  
+  db.view('general_progress', dbOptions, function(response) {
+
+    // Set up container object
+    var dataByStep = {};
+    var steps = data.generalProgressStepNames();
+    steps.forEach(function(step) {
+      dataByStep[step] = {};
+    });
+
+    response.forEach(function(row) {
+      var date = row.key;
+      var total = row.value[steps[0]];
+      steps.forEach(function(step) {
+        if (step in row.value) {
+          dataByStep[step][date] = row.value[step]/total;
+        } else {
+          dataByStep[step][date] = 0;
+        }
+      });
+    });
+
+    callback(dataByStep);
+  });
+  
+}
+
+exports.bounce_rate = function(segmentation, start, end, callback) {
+  var dbOptions = {
+    group: true
+  };
+  
+  // Convert timestamps to dates
+  if(start) {
+    dbOptions.startkey = util.getDateStringFromUnixTime(start);
+  }
+  if(end) {
+    dbOptions.endkey = util.getDateStringFromUnixTime(end);
+  }
+  
+  db.view('general_progress', dbOptions, function(response) {
+    var graph_data = [];
+    response.forEach(function(row) {
+      graph_data.push({
+        category: row.key, // date
+        value: 1 - (row.value['2 - User engaged'] / row.value['1 - Dialog shown']) // % who don't engage with the dialog
+      });
+    });
+    callback({ Total: graph_data });
+  });
+  
+  
+};

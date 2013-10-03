@@ -41,7 +41,7 @@ var VIEWS = {
           var total = accumulated.total + current.total;
           
           steps.forEach(function(step) {
-            if(! (step in accumulated.steps)) {
+            if(!accumulated.steps.hasOwnProperty(step)) {
               accumulated.steps[step] = 0;
             }
 
@@ -62,7 +62,7 @@ var VIEWS = {
         // Count the number of times each step has been completed
         values.forEach(function(userSteps) {
           userSteps.forEach(function(step) {
-            if(! (step in steps)) {
+            if(!steps.hasOwnProperty(step)) {
               steps[step] = 0;
             }
 
@@ -101,7 +101,7 @@ var VIEWS = {
       return values.reduce(function(accumulated, current) {
         var steps = Object.keys(current);
         steps.forEach(function(step) {
-          if(! (step in accumulated)) {
+          if(!accumulated.hasOwnProperty(step)) {
             accumulated[step] = 0;
           }
 
@@ -139,6 +139,33 @@ var VIEWS = {
     },
 
     reduce: '_stats'
+  },
+  
+  general_progress: {
+    map: function(doc) {
+      if(doc.generalProgressSteps.length > 0) { // Only count new users
+        var steps = {}
+        doc.generalProgressSteps.forEach(function(step) {
+          steps[step] = 1;
+        });
+        emit(doc.date, steps);
+      }
+    },
+    
+    reduce: function(keys, values, rereduce) {
+      return values.reduce(function(accumulated, current) {
+        var steps = Object.keys(current);
+        steps.forEach(function(step) {
+          if(!accumulated.hasOwnProperty(step)) {
+            accumulated[step] = 0;
+          }
+
+          accumulated[step] = accumulated[step] + current[step];
+        });
+
+        return accumulated;
+      }, {});
+    }
   }
 };
 
@@ -174,7 +201,7 @@ var VIEWS = {
     return values.reduce(function(accumulated, current) {
       var steps = Object.keys(current);
       steps.forEach(function(step) {
-        if(! (step in accumulated)) {
+        if(!accumulated.hasOwnProperty(step)) {
           accumulated[step] = 0;
         }
 
@@ -207,7 +234,7 @@ var VIEWS = {
       return values.reduce(function(accumulated, current) {
         var segments = Object.keys(current);
         segments.forEach(function(segment) {
-          if(! (segment in accumulated)) {
+          if(!accumulated.hasOwnProperty(segment)) {
             accumulated[segment] = 0;
           }
 
@@ -219,7 +246,7 @@ var VIEWS = {
     } else {
       var segments = {};
       values.forEach(function(value) {
-        if(! (value in segments)) {
+        if(!segments.hasOwnProperty(value)) {
           segments[value] = 0;
         }
 
@@ -343,6 +370,7 @@ exports.populateDatabase = function(options) {
       // Pre-compute certain values for the report (not already in the datum)
       datum.value.newUserSteps = data.newUserSteps(datum);
       datum.value.passwordResetSteps = data.passwordResetSteps(datum);
+      datum.value.generalProgressSteps = data.generalProgressSteps(datum);
       datum.value.date = data.getDate(datum);
 
       // Handle all kinds of sites-logged-in KPIs
