@@ -142,6 +142,10 @@ exports.new_user_per_day = function(req, res) {
     getReport(reports.new_user_per_day, req, res);
 }
 
+exports.bounce_rate = function(req, res) {
+    getReport(reports.bounce_rate, req, res);
+}
+
 /**
  * Processes request for steps in new user flow
  */
@@ -162,4 +166,14 @@ exports.password_reset = function(req, res) {
         resultToResponse(result, res);
     });
 };
+
+exports.general_progress_time = function(req, res) {
+    var start = getIntParamFromURL(req.url, 'start'),
+        end = getIntParamFromURL(req.url, 'end');
+
+    reports.general_progress_time(start, end, function(result) {
+        resultToResponse(result, res);
+    });
+};
+
 
