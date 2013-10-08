@@ -69,6 +69,11 @@
     { "milestone": "2013.08.15 train",
       "date": "2013-08-29" },
     { "milestone": "2013.08.28 train",
-      "date": "2013-09-12" }
+      "date": "2013-09-12" },
+    { "milestone": "kpiggybank down",
+      "date": "2013-09-14" },
+    { "milestone": "kpiggybank up",
+      "date": "2013-09-18" }
+      
   ]
 }
