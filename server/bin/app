@@ -64,11 +64,11 @@ app.post('/auth', function(req, res) {
                     req.session.mozilla_email = null;
                 }
 
+                res.redirect('/');
             } else {
                 console.error(verified.reason);
-                req.session.reset();
+                res.redirect('/force-logout');
             }
-            res.redirect('/');
         });
     };
 
@@ -97,6 +97,11 @@ app.post('/auth', function(req, res) {
     request.end();
 });
 
+app.get('/force-logout', function(req, res) {
+  req.session.reset();
+  res.render('force-logout');
+});
+
 app.get('/logout', function(req, res) {
     req.session.reset();
     res.redirect('/');
@@ -116,5 +121,7 @@ app.get('*', function(req,res) {
     res.send('Resource not found', 404);
 });
 
-app.listen(process.env['PORT'] || 3434);
+var port = process.env['PORT'] || 3434;
+console.log("listening on port " + port);
+app.listen(port);
 
