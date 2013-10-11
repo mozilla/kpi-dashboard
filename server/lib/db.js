@@ -367,7 +367,7 @@ exports.populateDatabase = function(options) {
   data.getData(options, function(rawData) {
     rawData.forEach(function(datum) {
       // Ignore blobs with empty event streams: they are the result of errors
-      if(!data.value.event_stream || datum.value.event_stream.length === 0) {
+      if(!datum.value.event_stream || datum.value.event_stream.length === 0) {
         return;
       }
 
