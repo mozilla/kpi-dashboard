@@ -4,7 +4,11 @@
 /*global $:false, Rickshaw:false, d3:false */
 
 $("#signin").click(function(e){
-  navigator.id.request();
+  navigator.id.request({
+    siteLogo: "https://developer.mozilla.org/files/3971/plain_sign_in_red.png",
+    siteName: "Persona #signin Analytics",
+    backgroundColor: "#2C2C2C"
+  });
 });
 
 $("#signout").click(function(e){
@@ -136,7 +140,7 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             renderer: 'area',
             segmentation: null
-        }, 
+        },
     // Report: total number of data points
     assertions:
         {
@@ -247,13 +251,13 @@ window.onpopstate = function(event) {
         report = window.location.hash;
         // Does a tab with the requested ID exist?
         if($('[data-toggle="tab"][href="' + report + '"]').length > 0) { // Yes!
-            activateTab(report);   
+            activateTab(report);
         }
     } else { // No state, no hash
         // Just show the first report in this case.
         report = $($('[data-toggle="tab"]')[0]).attr('href');
         activateTab(report);
-    }    
+    }
 };
 
 window.onload = window.onpopstate;
@@ -303,7 +307,7 @@ function dataToTimeSeries(data) {
                 data: data[segment].map(function(d) {
                     return {
                         // convert date to timestamp to take advantage of
-                        // Rickshaw's built-in date handling 
+                        // Rickshaw's built-in date handling
                         x: dateToTimestamp(d.category),
                         y: d.value || 0
                     };
@@ -313,7 +317,7 @@ function dataToTimeSeries(data) {
     }
 
     Rickshaw.Series.zeroFill(series);
-    
+
     return series;
 }
 
@@ -425,7 +429,7 @@ function initStepGraph(report) {
     });
 
     yAxis.render();
-    
+
     var labels = function(step) {
       var map = {
         1.5: report.steps[1].substr(4),
@@ -435,7 +439,7 @@ function initStepGraph(report) {
       };
       return map[step];
     }
-    
+
     // Show steps as x axis labels
     var xAxis = new Rickshaw.Graph.Axis.X({
       graph: report.graph,
@@ -443,9 +447,9 @@ function initStepGraph(report) {
       orientation: 'bottom',
       tickFormat: labels
     });
-    
+
     xAxis.render();
-    
+
     initStepTable(report);
 }
 
@@ -459,7 +463,7 @@ function initStepTable(report) {
   var table = [1,2,3,4].map(function(step) {
     return {stage: report.steps[step], count:0, move:0, progress:0, completed:0 };
   });
-  
+
   var rawData = report.series;
   for (var i = 0; i < rawData.length; i++) {
     for (var j = 0; j < rawData[i].data.length; j++) {
@@ -467,26 +471,26 @@ function initStepTable(report) {
       table[step_number-1].count += rawData[i].data[j].y
     }
   }
-  
+
   // Calculate other measures, based on counts for each stage
   for (var i = 0; i < table.length; i++) {
     if (i < table.length -1) {
       var move = table[i+1].count / table[i].count;
       table[i].move = move.toFixed(2) * 100;
     }
-    
+
     var progress = table[i].count / table[0].count;
     table[i].progress = progress.toFixed(2) * 100;
-    
+
     var completed = table[table.length-1].count / table[i].count;
     table[i].completed = completed.toFixed(2) * 100;
   }
-  
+
   // Spit out rows for the HTML table
   table.forEach(function(step) {
     container.append('<tr><td>'+ step.stage +'</td><td>' + step.count + '</td><td>' + step.progress + '%</td><td>' + step.move + '%</td><td>' + step.completed + '%</td></tr>');
   });
-  
+
 }
 
 /**
@@ -539,7 +543,7 @@ function dateChanged(report) {
     ['start', 'end'].forEach(function(type) {
         var input = report.tab.find('input[type=date].' + type).val();
         var milliseconds = (new Date(input)).getTime(); // milliseconds since epoch
-        
+
         if(isNaN(milliseconds)) { // Not a valid date
             alert('Invalid date entered');
             return false;
@@ -599,7 +603,7 @@ function cumulativeToggled(report) {
             updateGraph(report);
         });
     } else {
-        segmentationChanged(report);        
+        segmentationChanged(report);
     }
 }
 
@@ -618,7 +622,7 @@ function getSelectedSegments(report) {
 
 /**
  * Updates which segments are displayed on the graph.
- * 
+ *
  * Since we already have data for all segments, no new data is needed;
  * we just create a series using only those segments we want and display that.
  *
@@ -673,7 +677,7 @@ function setupSegmentControls() {
 
                 // Add an "other" option
                 segmentations[category].push('Other');
-                
+
                 // Create a checkbox for each segment
                 segmentations[category].forEach(function(segment) {
                     $('.segment-' + category).append(
@@ -687,7 +691,7 @@ function setupSegmentControls() {
         $('input.segment-toggle').click(function(e) {
             var report = targetReport(e.target);
             var success = updateDisplayedSegments(report);
-            
+
             // If the update failed, leave the checkbox in its original state.
             // @see updateDisplayedSegments for why this might happen
             if(! success) {
@@ -808,7 +812,7 @@ var stepReport = function(report) {
                 .select('.paths')
                 .selectAll('path')
                 .data(data);
-            
+
             lines
                 .enter()
                 .append('svg:path')
@@ -902,7 +906,7 @@ stepReport(_reports.general_progress_time);
                 var graph_data = steps.map(function(step) {
                   var step_number = parseInt(step[0], 10);
                   report.steps[step_number] = step;
-                                    
+
                   // 100% of people will be present in the first step,
                   // so we add the number from the first step to the total.
                   if (step_number === 1) {
@@ -910,9 +914,9 @@ stepReport(_reports.general_progress_time);
                   }
 
                   return {
-                    x: step_number, 
+                    x: step_number,
                     y: segmentData[step]
-                  };                  
+                  };
                 });
 
                 series.push({
@@ -920,7 +924,7 @@ stepReport(_reports.general_progress_time);
                     color: palette.color(),
                     data: graph_data.sort(function(a,b) { return a.x - b.x; })  // sort by ascending date
                 });
-            }            
+            }
         }
 
         Rickshaw.Series.zeroFill(series);
@@ -993,7 +997,7 @@ $('input[type=date].end').val(LATEST_DATE);
 
             var startDate = timestampToDate(ui.values[0]);
             var endDate = timestampToDate(ui.values[1]);
-            
+
             $('input[type=date].start').val(startDate);
             $('input[type=date].end').val(endDate);
 
