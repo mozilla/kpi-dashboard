@@ -39,7 +39,7 @@ var VIEWS = {
         return values.reduce(function(accumulated, current) {
           var steps = Object.keys(current.steps);
           var total = accumulated.total + current.total;
-          
+
           steps.forEach(function(step) {
             if(!accumulated.steps.hasOwnProperty(step)) {
               accumulated.steps[step] = 0;
@@ -89,7 +89,7 @@ var VIEWS = {
   new_user: {
     map: function(doc) {
       if(doc.newUserSteps.length > 0) { // Only count new users
-        var steps = {}
+        var steps = {};
         doc.newUserSteps.forEach(function(step) {
           steps[step] = 1;
         });
@@ -140,18 +140,18 @@ var VIEWS = {
 
     reduce: '_stats'
   },
-  
+
   general_progress: {
     map: function(doc) {
       if(doc.generalProgressSteps.length > 0) { // Only count new users
-        var steps = {}
+        var steps = {};
         doc.generalProgressSteps.forEach(function(step) {
           steps[step] = 1;
         });
         emit(doc.date, steps);
       }
     },
-    
+
     reduce: function(keys, values, rereduce) {
       return values.reduce(function(accumulated, current) {
         var steps = Object.keys(current);
@@ -182,14 +182,14 @@ var VIEWS = {
    *     segmentation with the one we want.
    */
   var getMapBySegment = function(segmentation) {
-    return function(doc) {      
+    return function(doc) {
       if(doc.newUserSteps.length > 0) {
-        
-        var steps = {}
+
+        var steps = {};
         doc.newUserSteps.forEach(function(step) {
           steps[step] = 1;
         });
-        emit([doc.date, doc["---SEGMENTATION---"]], steps);        
+        emit([doc.date, doc["---SEGMENTATION---"]], steps);
       }
     }.toString().replace('---SEGMENTATION---', segmentation);
   };
@@ -209,7 +209,7 @@ var VIEWS = {
       });
 
       return accumulated;
-    }, {});    
+    }, {});
   };
 
   var segmentations = Object.keys(data.getSegmentations());
@@ -317,17 +317,17 @@ var DOCUMENT = {
  */
 function initDatabase(callback) {
   db.exists(function(err, exists) {
-    if(err) throw(err);
+    if(err) return callback(err);
 
     if(exists) {
       // Update the views stored in the database to the current version.
       // Does this regardless of the current state of the design document
       // (i.e., even if it is up-to-date).
       db.get('_design/' + NAME, function(err, doc) {
-        if(err) throw(err);
+        if(err) return callback(err);
 
         db.save('_design/' + NAME, doc._rev, DOCUMENT, function(err, res) {
-          if(err) throw err;
+          if(err) return callback(err);
 
           callback();
         });
@@ -336,7 +336,7 @@ function initDatabase(callback) {
       // Create database and initialize views
       db.create(function(err) {
         db.save('_design/' + NAME, DOCUMENT, function(err) {
-          if(err) throw err;
+          if(err) return callback(err);
 
           callback();
         });
@@ -348,7 +348,11 @@ function initDatabase(callback) {
 
 // On load:
 (function() {
-  initDatabase(function() {
+  initDatabase(function(err) {
+    if (err) {
+      return console.log(
+                "There was an error initializing the database" + String(err));
+    }
     exports.db = db;
   });
 })();
@@ -363,7 +367,7 @@ exports.populateDatabase = function(options) {
   data.getData(options, function(rawData) {
     rawData.forEach(function(datum) {
       // Ignore blobs with empty event streams: they are the result of errors
-      if(datum.value.event_stream.length === 0) {
+      if(!datum.value.event_stream || datum.value.event_stream.length === 0) {
         return;
       }
 
