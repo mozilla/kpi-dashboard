@@ -54,15 +54,26 @@
       ]
   },
   "milestones": [
-    { "milestone": "2013-6-19 train",
+    { "milestone": "2013.06.19 train",
       "date": "2013-07-11" },
-    { "milestone": "2013-7-03 train",
+    { "milestone": "2013.07.03 train",
       "date": "2013-07-18" },
     { "milestone": "Gmail Bridge Live",
       "date": "2013-07-23" },
-    { "milestone": "2013-7-17 train",
+    { "milestone": "2013.07.17 train",
       "date": "2013-08-06" },
     { "milestone": "Gmail Bridge Announced",
-      "date": "2013-08-08" }
+      "date": "2013-08-08" },
+    { "milestone": "2013.07.31 train",
+      "date": "2013-08-21" },
+    { "milestone": "2013.08.15 train",
+      "date": "2013-08-29" },
+    { "milestone": "2013.08.28 train",
+      "date": "2013-09-12" },
+    { "milestone": "kpiggybank down",
+      "date": "2013-09-14" },
+    { "milestone": "kpiggybank up",
+      "date": "2013-09-18" }
+      
   ]
 }
