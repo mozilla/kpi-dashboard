@@ -166,6 +166,40 @@ var VIEWS = {
         return accumulated;
       }, {});
     }
+  },
+  
+  new_user_bounce: {
+    map: function(doc) {
+      var events = doc.event_stream.map(function(eventPair) {
+        return eventPair[0];
+      });
+
+      if (doc.generalProgressSteps.indexOf('1 - Dialog shown') !== -1) {
+        if (doc.generalProgressSteps.indexOf('2 - User engaged') === -1) {
+            emit(doc.date, {"assertion":0, "bounce":1, "fail":0, "fallback":0, "idp":0});
+        } else if (events.indexOf('assertion_generated') !== -1 ) {
+          if (doc.newUserSteps.length !== 0) {
+        	emit(doc.date, {"assertion":0, "bounce":0, "fail":0, "fallback":1, "idp":0});
+          } else if (doc.new_account && events.indexOf('screen.provision_primary_user') !== -1) {
+            emit(doc.date, {"assertion":0, "bounce":0, "fail":0, "fallback":0, "idp":1});
+          } else {
+            emit(doc.date, {"assertion":1, "bounce":0, "fail":0, "fallback":0, "idp":0});
+          }
+        } else {
+            emit(doc.date, {"assertion":0, "bounce":0, "fail":1, "fallback":0, "idp":0});
+        }
+      }
+    },
+    
+    reduce: function (keys, values, rereduce) {         
+      return values.reduce(function(accumulated, current) {
+        var outcomes = Object.keys(current);
+        outcomes.forEach(function(outcome) {
+          accumulated[outcome] = accumulated[outcome] + current[outcome];
+        });
+        return accumulated;
+      });
+    }
   }
 };
 

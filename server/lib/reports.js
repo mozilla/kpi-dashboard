@@ -312,7 +312,7 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
       callback({ Total: graph_data });
     });
   }
-}
+};
 
 /**
  * Reports fraction of users at each step in the new user flow, over time
@@ -437,8 +437,7 @@ exports.general_progress_time = function(start, end, callback) {
 
     callback(dataByStep);
   });
-  
-}
+};
 
 exports.bounce_rate = function(segmentation, start, end, callback) {
   var dbOptions = {
@@ -463,6 +462,31 @@ exports.bounce_rate = function(segmentation, start, end, callback) {
     });
     callback({ Total: graph_data });
   });
-  
-  
 };
+
+exports.new_user_bounce = function(segmentation, start, end, callback) {
+  var dbOptions = {
+    group: true
+  };
+  
+  if(start) {
+    dbOptions.startkey = util.getDateStringFromUnixTime(start);
+  }
+  if(end) {
+    dbOptions.endkey = util.getDateStringFromUnixTime(end);
+  }
+  
+  db.view('new_user_bounce', dbOptions, function(response) {
+    var graph_data = [];
+    
+    response.forEach(function(row) {
+      graph_data.push({
+        category: row.key, //date
+        // % new users who bounce: assumes most/all failures are new users and most/all open/closes are new users
+        value: row.value['bounce'] / (row.value['bounce'] + row.value['idp'] + row.value['fallback'] + row.value['fail']) 
+      });
+    });
+    callback({ Total: graph_data });
+  });
+};
+

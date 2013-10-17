@@ -146,6 +146,10 @@ exports.bounce_rate = function(req, res) {
     getReport(reports.bounce_rate, req, res);
 }
 
+exports.new_user_bounce = function(req, res) {
+    getReport(reports.new_user_bounce, req, res);
+}
+
 /**
  * Processes request for steps in new user flow
  */

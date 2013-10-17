@@ -185,7 +185,21 @@ var _reports = {
               height: 300,
               padding: { vertical: 100, horizontal: 0 }
           }
-        }
+        },
+    new_user_bounce:
+        {
+          kpi: 'new_user_bounce',
+          tab: $('#new_user_bounce'),
+          dataToSeries: dataToTimeSeries,
+          graphDecorator: initTimeGraph,
+          update: updateGraph,
+          graph: null,
+          series: null,
+          start: dateToTimestamp(EARLIEST_DATE),
+          end: dateToTimestamp(LATEST_DATE),
+          renderer: 'line',
+          segmentation: null
+        },
 };
 
 var _milestones = [];
@@ -944,7 +958,8 @@ stepReport(_reports.general_progress_time);
 })(_reports.new_user);
 
 // Setup report for sites and assertions
-[_reports.sites, _reports.assertions, _reports.new_user_success, _reports.new_user_per_day, _reports.bounce_rate]
+[_reports.sites, _reports.assertions, _reports.new_user_success, 
+ _reports.new_user_per_day, _reports.bounce_rate, _reports.new_user_bounce]
 .forEach(function(report) {
     loadData(report, function() {
         drawGraph(report, report.series);
