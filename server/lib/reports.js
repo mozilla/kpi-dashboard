@@ -468,25 +468,51 @@ exports.new_user_bounce = function(segmentation, start, end, callback) {
   var dbOptions = {
     group: true
   };
-  
-  if(start) {
-    dbOptions.startkey = util.getDateStringFromUnixTime(start);
-  }
-  if(end) {
-    dbOptions.endkey = util.getDateStringFromUnixTime(end);
-  }
-  
-  db.view('new_user_bounce', dbOptions, function(response) {
-    var graph_data = [];
-    
-    response.forEach(function(row) {
-      graph_data.push({
-        category: row.key, //date
-        // % new users who bounce: assumes most/all failures are new users and most/all open/closes are new users
-        value: row.value['bounce'] / (row.value['bounce'] + row.value['idp'] + row.value['fallback'] + row.value['fail']) 
+
+  if (segmentation) {
+    if(start) {
+      dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
+    }
+    if(end) {
+      dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
+    }
+    db.view('new_user_bounce_' + segmentation, dbOptions, function(response) {
+      var graph_data = {};
+      
+      response.forEach(function(row) {
+        var date = row.key[0];
+        var segment = row.key[1];
+        
+        if (!(segment in graph_data)) {
+          graph_data[segment] = [];
+        }
+        
+        graph_data[segment].push({
+          category: date,
+          value: row.value['bounce'] / (row.value['bounce'] + row.value['idp'] + row.value['fallback'] + row.value['fail'])
+        });
       });
+      callback(graph_data);
     });
-    callback({ Total: graph_data });
-  });
+  } else {
+    if(start) {
+      dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+      dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+    db.view('new_user_bounce', dbOptions, function(response) {
+      var graph_data = [];
+    
+      response.forEach(function(row) {
+        graph_data.push({
+          category: row.key, //date
+          // % new users who bounce: assumes most/all failures are new users and most/all open/closes are new users
+          value: row.value['bounce'] / (row.value['bounce'] + row.value['idp'] + row.value['fallback'] + row.value['fail'])
+        });
+      });
+      callback({ Total: graph_data });
+    });
+  }
 };
 
