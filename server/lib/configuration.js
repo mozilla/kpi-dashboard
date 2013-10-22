@@ -41,7 +41,8 @@ var conf = module.exports = convict({
     Screen: 'array { string }* = [ "1024×768", "1680×1050", "etc"]',
     Emails: 'array { string }* = [ "0", "1", "2", "3+", "Unknown" ]',
     Locale: 'array { string }* = [ "en-us", "en-US" ]',
-    API: 'array { string }* = [ "get", "watch" ]'
+    API: 'array { string }* = [ "get", "watch" ]',
+    EmailType: 'array { string }* = [ "IdP", "Fallback"]'
   },
   aliases: 'object { } * = {"Windows NT 6.1": "Windows 7"}',
   flows: 'object { } *',
