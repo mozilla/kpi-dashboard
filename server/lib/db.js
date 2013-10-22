@@ -24,65 +24,27 @@ var VIEWS = {
   password_reset: {
     map: function(doc) {
       if(doc.passwordResetSteps.length > 0) {
-        emit(doc.date, doc.passwordResetSteps);
+        var steps = {};
+        doc.passwordResetSteps.forEach(function(step) {
+          steps[step] = 1;
+        });
+        emit(doc.date, steps);
       }
     },
 
     reduce: function(keys, values, rereduce) {
-      // Merge the objects that are the results of the reductions
-      if(rereduce) {
-        var initial = {
-          steps: {},
-          total: 0
-        };
+      return values.reduce(function(accumulated, current) {
+        var steps = Object.keys(current);
+        steps.forEach(function(step) {
+          if(!accumulated.hasOwnProperty(step)) {
+            accumulated[step] = 0;
+          }
 
-        return values.reduce(function(accumulated, current) {
-          var steps = Object.keys(current.steps);
-          var total = accumulated.total + current.total;
-
-          steps.forEach(function(step) {
-            if(!accumulated.steps.hasOwnProperty(step)) {
-              accumulated.steps[step] = 0;
-            }
-
-            // The fraction of users who completed this step is the
-            // weighted average of the results being merged.
-            accumulated.steps[step] =
-              current.steps[step] * current.total / total +
-              accumulated.steps[step] * accumulated.total / total;
-
-          });
-          accumulated.total = total;
-
-          return accumulated;
-        }, initial);
-      } else {
-        var steps = {};
-
-        // Count the number of times each step has been completed
-        values.forEach(function(userSteps) {
-          userSteps.forEach(function(step) {
-            if(!steps.hasOwnProperty(step)) {
-              steps[step] = 0;
-            }
-
-            steps[step]++;
-          });
+          accumulated[step] = accumulated[step] + current[step];
         });
 
-        // Compute fraction of users completing steps
-        var total = values.length;
-        for(var step in steps) {
-          if(steps.hasOwnProperty(step)) {
-            steps[step] /= total;
-          }
-        }
-
-        return {
-          steps: steps,
-          total: total
-        };
-      }
+        return accumulated;
+      }, {});
     }
   },
 
