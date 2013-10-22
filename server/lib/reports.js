@@ -137,12 +137,13 @@ exports.new_user_success = function(segmentation, start, end, callback) {
       dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
     }
 
-    db.view('new_user_success_' + segmentation, dbOptions, function(response) {
+    db.view('new_user_bounce_' + segmentation, dbOptions, function(response) {
       var result = {};
       response.forEach(function(row) {
-        var date = row.key[0],
-        segment = row.key[1],
-        mean = row.value.sum / row.value.count;
+        var date = row.key[0];
+        var segment = row.key[1];
+        var success = row.value['idp'] + row.value['fallback'];
+        var failure = row.value['bounce'] + row.value['fail'];
 
         if(! (segment in result)) {
           result[segment] = [];
@@ -150,7 +151,7 @@ exports.new_user_success = function(segmentation, start, end, callback) {
 
         result[segment].push({
           category: date,
-          value: mean
+          value: success / (success + failure)
         });
       });
 
@@ -164,13 +165,15 @@ exports.new_user_success = function(segmentation, start, end, callback) {
       dbOptions.endkey = util.getDateStringFromUnixTime(end);
     }
 
-    db.view('new_user_success', dbOptions, function(response) {
+    db.view('new_user_bounce', dbOptions, function(response) {
       var dates = [];
       response.forEach(function(row) {
-        var stats = row.value;
+        var success = row.value['idp'] + row.value['fallback'];
+        var failure = row.value['bounce'] + row.value['fail'];
+        
         dates.push({
           category: row.key, // date
-          value: stats.sum / stats.count // mean
+          value: success / (success + failure)
         });
       });
 
