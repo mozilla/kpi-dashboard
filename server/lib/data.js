@@ -257,7 +257,7 @@ exports.passwordResetSteps = function(datum) {
     var steps = [];
     var events = eventList(datum);
 
-    if(events.indexOf('screen.reset_password') === -1) { // not a password reset
+    if(events.indexOf('user.reset_password_staged') === -1) { // not a password reset
         return steps;
     }
 
