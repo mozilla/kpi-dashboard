@@ -263,9 +263,6 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
     group: true
   };
   
-  var step_names = data.newUserStepNames();
-  var last_step_name = step_names[step_names.length-1];
-  
   if (segmentation) {
     if(start) {
       dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
@@ -274,7 +271,7 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
       dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
     }
     
-    db.view('new_user_' + segmentation, dbOptions, function(response) {
+    db.view('new_user_bounce_' + segmentation, dbOptions, function(response) {
       var graph_data = {};
       
       response.forEach(function(row) {
@@ -287,7 +284,7 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
         
         graph_data[segment].push({
           category: date,
-          value: row.value[last_step_name]
+          value: row.value['idp'] + row.value['fallback']
         });
       });
       callback(graph_data);
@@ -301,12 +298,12 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
       dbOptions.endkey = util.getDateStringFromUnixTime(end);
     }
 
-    db.view('new_user', dbOptions, function(response) {
+    db.view('new_user_bounce', dbOptions, function(response) {
       var graph_data = [];
       response.forEach(function(row) {
         graph_data.push({
           category: row.key,
-          value: row.value[last_step_name]
+          value: row.value['idp'] + row.value['fallback']
         });
       });
       callback({ Total: graph_data });
