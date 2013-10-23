@@ -383,17 +383,14 @@ exports.password_reset = function(start, end, callback) {
 
     dataByDate.forEach(function(datum) {
       var date = datum.key;
+      var total = datum.value[steps[0]];
 
       steps.forEach(function(step) {
-        var value;
-        if(! (step in datum.value.steps)) { // No data about this step
-          // That means no one completed it.
-          value = 0;
+        if(step in datum.value) { 
+          dataByStep[step][date] = datum.value[step]/total;
         } else {
-          value = datum.value.steps[step];
+          dataByStep[step][date] = 0;
         }
-
-        dataByStep[step][date] = value;
       });
     });
 

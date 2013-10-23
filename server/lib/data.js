@@ -127,8 +127,7 @@ exports.getSegmentation = function(metric, datum) {
     case "EmailType":
       if((datum.value.newUserSteps.length > 0) || (datum.value.passwordResetSteps.length > 0)) {
         value = "Fallback";
-      }
-      if('email_type' in datum.value) {
+      } else if('email_type' in datum.value) {
         value = datum.value.email_type;
       }
     }
