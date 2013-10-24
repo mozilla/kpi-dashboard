@@ -5,7 +5,8 @@
         "Screen": [ "Desktop (>= 1024)", "Tablet Profile", "Mobile (<= 640)"],
         "Emails": [ "0", "1", "2", "3+", "Unknown" ],
         "Locale": [ "English", "Spanish", "Portuguese - Brazil", "Polish", "Dutch", "Italian", "French", "German", "Russian", "Turkish" ],
-        "API": [ "get", "getVerifiedEmail", "watch",  "watch with onready", "internal"]
+        "API": [ "get", "getVerifiedEmail", "watch",  "watch with onready", "internal"],
+        "EmailType": [ "IdP", "Fallback"]
     },
     "aliases": {
         "Windows NT 6.2": "Windows 8",
@@ -26,7 +27,9 @@
         "pl" : "Polish",
         "tr" : "Turkish",
         "ru" : "Russian",
-        "nl" : "Dutch"
+        "nl" : "Dutch",
+        "primary" : "IdP",
+        "secondary" : "Fallback"
     },
     "flows": {
       "new_user": [
@@ -36,10 +39,9 @@
         [ "4 - Logged in (assertion generated)", "assertion_generated" ]
       ],
       "password_reset": [
-        [ "1 - Begin password reset", "screen.reset_password" ],
-        [ "2 - Choose new password", "user.reset_password_staged" ],
-        [ "3 - Email verified", "user.reset_password_confirmed" ],
-        [ "4 - Logged in (assertion generated)", "assertion_generated" ]
+        [ "1 - Begin password reset", "user.reset_password_staged" ],
+        [ "2 - New password confirmed", "user.reset_password_confirmed" ],
+        [ "3 - Logged in (assertion generated)", "assertion_generated" ]
       ],
       "general_progress": [
         [ "0 - Blob sent", ""],

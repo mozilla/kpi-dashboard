@@ -24,65 +24,27 @@ var VIEWS = {
   password_reset: {
     map: function(doc) {
       if(doc.passwordResetSteps.length > 0) {
-        emit(doc.date, doc.passwordResetSteps);
+        var steps = {};
+        doc.passwordResetSteps.forEach(function(step) {
+          steps[step] = 1;
+        });
+        emit(doc.date, steps);
       }
     },
 
     reduce: function(keys, values, rereduce) {
-      // Merge the objects that are the results of the reductions
-      if(rereduce) {
-        var initial = {
-          steps: {},
-          total: 0
-        };
+      return values.reduce(function(accumulated, current) {
+        var steps = Object.keys(current);
+        steps.forEach(function(step) {
+          if(!accumulated.hasOwnProperty(step)) {
+            accumulated[step] = 0;
+          }
 
-        return values.reduce(function(accumulated, current) {
-          var steps = Object.keys(current.steps);
-          var total = accumulated.total + current.total;
-
-          steps.forEach(function(step) {
-            if(!accumulated.steps.hasOwnProperty(step)) {
-              accumulated.steps[step] = 0;
-            }
-
-            // The fraction of users who completed this step is the
-            // weighted average of the results being merged.
-            accumulated.steps[step] =
-              current.steps[step] * current.total / total +
-              accumulated.steps[step] * accumulated.total / total;
-
-          });
-          accumulated.total = total;
-
-          return accumulated;
-        }, initial);
-      } else {
-        var steps = {};
-
-        // Count the number of times each step has been completed
-        values.forEach(function(userSteps) {
-          userSteps.forEach(function(step) {
-            if(!steps.hasOwnProperty(step)) {
-              steps[step] = 0;
-            }
-
-            steps[step]++;
-          });
+          accumulated[step] = accumulated[step] + current[step];
         });
 
-        // Compute fraction of users completing steps
-        var total = values.length;
-        for(var step in steps) {
-          if(steps.hasOwnProperty(step)) {
-            steps[step] /= total;
-          }
-        }
-
-        return {
-          steps: steps,
-          total: total
-        };
-      }
+        return accumulated;
+      }, {});
     }
   },
 
@@ -111,18 +73,6 @@ var VIEWS = {
         return accumulated;
       }, {});
     }
-  },
-
-  new_user_success: {
-    map: function(doc) {
-      if(doc.newUserSteps.length > 0) { // Only count new users
-        var lastStep = doc.newUserSteps[doc.newUserSteps.length - 1];
-        var success = (lastStep === "4 - Logged in (assertion generated)");
-        emit(doc.date, success ? 1 : 0);
-      }
-    },
-
-    reduce: '_stats'
   },
 
   assertions: {
@@ -165,6 +115,40 @@ var VIEWS = {
 
         return accumulated;
       }, {});
+    }
+  },
+  
+  new_user_bounce: {
+    map: function(doc) {
+      var events = doc.event_stream.map(function(eventPair) {
+        return eventPair[0];
+      });
+
+      if (doc.generalProgressSteps.indexOf('1 - Dialog shown') !== -1) {
+        if (doc.generalProgressSteps.indexOf('2 - User engaged') === -1) {
+            emit(doc.date, {"assertion":0, "bounce":1, "fail":0, "fallback":0, "idp":0});
+        } else if (events.indexOf('assertion_generated') !== -1 ) {
+          if (doc.newUserSteps.length !== 0) {
+        	emit(doc.date, {"assertion":0, "bounce":0, "fail":0, "fallback":1, "idp":0});
+          } else if (doc.new_account && events.indexOf('screen.provision_primary_user') !== -1) {
+            emit(doc.date, {"assertion":0, "bounce":0, "fail":0, "fallback":0, "idp":1});
+          } else {
+            emit(doc.date, {"assertion":1, "bounce":0, "fail":0, "fallback":0, "idp":0});
+          }
+        } else {
+            emit(doc.date, {"assertion":0, "bounce":0, "fail":1, "fallback":0, "idp":0});
+        }
+      }
+    },
+    
+    reduce: function (keys, values, rereduce) {         
+      return values.reduce(function(accumulated, current) {
+        var outcomes = Object.keys(current);
+        outcomes.forEach(function(outcome) {
+          accumulated[outcome] = accumulated[outcome] + current[outcome];
+        });
+        return accumulated;
+      });
     }
   }
 };
@@ -284,27 +268,52 @@ var VIEWS = {
   });
 })();
 
-/** Initialize new_user_success report */
+/** Initialize new user bounce report */
 (function() {
+  
   var getMapBySegment = function(segmentation) {
     return function(doc) {
-      if(doc.newUserSteps.length > 0) { // Only count new users
-        var lastStep = doc.newUserSteps[doc.newUserSteps.length - 1];
-        var success = (lastStep === "4 - Logged in (assertion generated)");
-        emit([doc.date, doc["---SEGMENTATION---"]], success ? 1 : 0);
-      }
-    }.toString().replace('---SEGMENTATION---', segmentation);
+      var events = doc.event_stream.map(function(eventPair) {
+        return eventPair[0];
+      });
 
+      if (doc.generalProgressSteps.indexOf('1 - Dialog shown') !== -1) {
+        if (doc.generalProgressSteps.indexOf('2 - User engaged') === -1) {
+            emit([doc.date, doc["---SEGMENTATION---"]], {"assertion":0, "bounce":1, "fail":0, "fallback":0, "idp":0});
+        } else if (events.indexOf('assertion_generated') !== -1 ) {
+          if (doc.newUserSteps.length !== 0) {
+        	emit([doc.date, doc["---SEGMENTATION---"]], {"assertion":0, "bounce":0, "fail":0, "fallback":1, "idp":0});
+          } else if (doc.new_account && events.indexOf('screen.provision_primary_user') !== -1) {
+            emit([doc.date, doc["---SEGMENTATION---"]], {"assertion":0, "bounce":0, "fail":0, "fallback":0, "idp":1});
+          } else {
+            emit([doc.date, doc["---SEGMENTATION---"]], {"assertion":1, "bounce":0, "fail":0, "fallback":0, "idp":0});
+          }
+        } else {
+            emit([doc.date, doc["---SEGMENTATION---"]], {"assertion":0, "bounce":0, "fail":1, "fallback":0, "idp":0});
+        }
+      }
+    }.toString().replace(new RegExp('---SEGMENTATION---', 'g'), segmentation);
+  };
+
+  var reduceBySegment = function(keys, values, rereduce) {        
+    return values.reduce(function(accumulated, current) {
+      var outcomes = Object.keys(current);
+      outcomes.forEach(function(outcome) {
+        accumulated[outcome] = accumulated[outcome] + current[outcome];
+      });
+      return accumulated;
+    });
   };
 
   var segmentations = Object.keys(data.getSegmentations());
   segmentations.forEach(function(segmentation) {
-    VIEWS['new_user_success_' + segmentation] = {
+    VIEWS['new_user_bounce_' + segmentation] = {
       map: getMapBySegment(segmentation),
-      reduce: '_stats'
+      reduce: reduceBySegment
     };
   });
 })();
+
 
 
 /** Design document */

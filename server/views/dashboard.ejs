@@ -46,6 +46,9 @@
                         <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
                     </li>
                     <li>
+                        <a href="#new_user_bounce" data-toggle="tab">New user bounce rate</a>
+                    </li>
+                    <li>
                         <a href="#bounce_rate" data-toggle="tab">Bounce rate</a>
                     </li>
                     <li>
@@ -343,6 +346,42 @@
                         </div>
                     </div>
                     
+                    <div id="new_user_bounce" class="tab-pane form-inline">
+                      <h2>How many *new* users fail to engage with the dialog?</h2>
+                      
+                      <div class="chart"></div>
+                      <div class="timeline"></div>
+                      
+                      <div class="chart-controls">
+                        <div class="date-select">
+                          <p>
+                              From
+                              <input type="date" class="start" placeholder="YYYY-MM-DD">
+                              to
+                              <input type="date" class="end" placeholder="YYYY-MM-DD">
+                          </p>
+                          <div class="slider date-slider"></div>
+                        </div>
+                        <p class="controls">Show
+                            <label class="control-label inline">
+                                <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative
+                            </label>
+                            <label class="control-label inline">
+                                <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
+                            </label>
+                        </p>
+
+                        <div class="segment-options">
+                            <p>Segment by
+                                <select class="segment-select input-small">
+                                </select>
+                            </p>
+                            <div class="segment-boxes">
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    
                     <div id="bounce_rate" class="tab-pane form-inline">
                       <h2>How many users fail to engage with the dialog?</h2>
                       
@@ -361,7 +400,6 @@
                         </div>
                       </div>
                     </div>
-                    
 
                     <div id="general_progress_time" class="step-report tab-pane form-inline">
                       <h2>Do users progress through the dialog?</h2>

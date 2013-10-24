@@ -105,8 +105,6 @@ exports.getSegmentation = function(metric, datum) {
         } else {
           value = "Tablet Profile";
         }
-      } else {
-        value = "Unknown";
       }
       break;
     case "Emails":
@@ -116,8 +114,6 @@ exports.getSegmentation = function(metric, datum) {
         } else if(datum.value.number_emails >= 3) {
           value = "3+";
         }
-      } else {
-        value = "Unknown";
       }
       break;
     case "Locale":
@@ -126,10 +122,14 @@ exports.getSegmentation = function(metric, datum) {
     case "API":
       if('rp_api' in datum.value) {
         value = datum.value.rp_api;
-      } else {
-        value = "Unknown";
       }
       break;
+    case "EmailType":
+      if((datum.value.newUserSteps.length > 0) || (datum.value.passwordResetSteps.length > 0)) {
+        value = "Fallback";
+      } else if('email_type' in datum.value) {
+        value = datum.value.email_type;
+      }
     }
 
     if(value !== null && value in config.get('aliases')) {
@@ -257,7 +257,7 @@ exports.passwordResetSteps = function(datum) {
     var steps = [];
     var events = eventList(datum);
 
-    if(events.indexOf('screen.reset_password') === -1) { // not a password reset
+    if(events.indexOf('user.reset_password_staged') === -1) { // not a password reset
         return steps;
     }
 

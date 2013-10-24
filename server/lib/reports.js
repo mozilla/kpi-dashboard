@@ -137,12 +137,13 @@ exports.new_user_success = function(segmentation, start, end, callback) {
       dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
     }
 
-    db.view('new_user_success_' + segmentation, dbOptions, function(response) {
+    db.view('new_user_bounce_' + segmentation, dbOptions, function(response) {
       var result = {};
       response.forEach(function(row) {
-        var date = row.key[0],
-        segment = row.key[1],
-        mean = row.value.sum / row.value.count;
+        var date = row.key[0];
+        var segment = row.key[1];
+        var success = row.value['idp'] + row.value['fallback'];
+        var failure = row.value['bounce'] + row.value['fail'];
 
         if(! (segment in result)) {
           result[segment] = [];
@@ -150,7 +151,7 @@ exports.new_user_success = function(segmentation, start, end, callback) {
 
         result[segment].push({
           category: date,
-          value: mean
+          value: success / (success + failure)
         });
       });
 
@@ -164,13 +165,15 @@ exports.new_user_success = function(segmentation, start, end, callback) {
       dbOptions.endkey = util.getDateStringFromUnixTime(end);
     }
 
-    db.view('new_user_success', dbOptions, function(response) {
+    db.view('new_user_bounce', dbOptions, function(response) {
       var dates = [];
       response.forEach(function(row) {
-        var stats = row.value;
+        var success = row.value['idp'] + row.value['fallback'];
+        var failure = row.value['bounce'] + row.value['fail'];
+        
         dates.push({
           category: row.key, // date
-          value: stats.sum / stats.count // mean
+          value: success / (success + failure)
         });
       });
 
@@ -263,9 +266,6 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
     group: true
   };
   
-  var step_names = data.newUserStepNames();
-  var last_step_name = step_names[step_names.length-1];
-  
   if (segmentation) {
     if(start) {
       dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
@@ -274,7 +274,7 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
       dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
     }
     
-    db.view('new_user_' + segmentation, dbOptions, function(response) {
+    db.view('new_user_bounce_' + segmentation, dbOptions, function(response) {
       var graph_data = {};
       
       response.forEach(function(row) {
@@ -287,7 +287,7 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
         
         graph_data[segment].push({
           category: date,
-          value: row.value[last_step_name]
+          value: row.value['idp'] + row.value['fallback']
         });
       });
       callback(graph_data);
@@ -301,18 +301,18 @@ exports.new_user_per_day = function(segmentation, start, end, callback) {
       dbOptions.endkey = util.getDateStringFromUnixTime(end);
     }
 
-    db.view('new_user', dbOptions, function(response) {
+    db.view('new_user_bounce', dbOptions, function(response) {
       var graph_data = [];
       response.forEach(function(row) {
         graph_data.push({
           category: row.key,
-          value: row.value[last_step_name]
+          value: row.value['idp'] + row.value['fallback']
         });
       });
       callback({ Total: graph_data });
     });
   }
-}
+};
 
 /**
  * Reports fraction of users at each step in the new user flow, over time
@@ -383,17 +383,14 @@ exports.password_reset = function(start, end, callback) {
 
     dataByDate.forEach(function(datum) {
       var date = datum.key;
+      var total = datum.value[steps[0]];
 
       steps.forEach(function(step) {
-        var value;
-        if(! (step in datum.value.steps)) { // No data about this step
-          // That means no one completed it.
-          value = 0;
+        if(step in datum.value) { 
+          dataByStep[step][date] = datum.value[step]/total;
         } else {
-          value = datum.value.steps[step];
+          dataByStep[step][date] = 0;
         }
-
-        dataByStep[step][date] = value;
       });
     });
 
@@ -437,8 +434,7 @@ exports.general_progress_time = function(start, end, callback) {
 
     callback(dataByStep);
   });
-  
-}
+};
 
 exports.bounce_rate = function(segmentation, start, end, callback) {
   var dbOptions = {
@@ -463,6 +459,57 @@ exports.bounce_rate = function(segmentation, start, end, callback) {
     });
     callback({ Total: graph_data });
   });
-  
-  
 };
+
+exports.new_user_bounce = function(segmentation, start, end, callback) {
+  var dbOptions = {
+    group: true
+  };
+
+  if (segmentation) {
+    if(start) {
+      dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
+    }
+    if(end) {
+      dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
+    }
+    db.view('new_user_bounce_' + segmentation, dbOptions, function(response) {
+      var graph_data = {};
+      
+      response.forEach(function(row) {
+        var date = row.key[0];
+        var segment = row.key[1];
+        
+        if (!(segment in graph_data)) {
+          graph_data[segment] = [];
+        }
+        
+        graph_data[segment].push({
+          category: date,
+          value: row.value['bounce'] / (row.value['bounce'] + row.value['idp'] + row.value['fallback'] + row.value['fail'])
+        });
+      });
+      callback(graph_data);
+    });
+  } else {
+    if(start) {
+      dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+      dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+    db.view('new_user_bounce', dbOptions, function(response) {
+      var graph_data = [];
+    
+      response.forEach(function(row) {
+        graph_data.push({
+          category: row.key, //date
+          // % new users who bounce: assumes most/all failures are new users and most/all open/closes are new users
+          value: row.value['bounce'] / (row.value['bounce'] + row.value['idp'] + row.value['fallback'] + row.value['fail'])
+        });
+      });
+      callback({ Total: graph_data });
+    });
+  }
+};
+
